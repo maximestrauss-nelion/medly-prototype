@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<script type="application/json" id="cowork-artifact-meta">
+{"name":"Medly Prototype","schemaVersion":1,"description":"Prototype Medly v0.3 — Patient (armoire, ordonnances, matching, observance, profil complet), Aidant familial, Pharmacien, Organisme payeur/Mutuelle. Zéro dépendance externe."}
+</script>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Medly — Prototype v0.3</title>
+<style>
+:root{color-scheme:light;--blue:#2563EB;--blue-l:#EFF6FF;--blue-m:#BFDBFE;--green:#16A34A;--green-l:#F0FDF4;--orange:#D97706;--orange-l:#FFFBEB;--red:#DC2626;--red-l:#FEF2F2;--purple:#7C3AED;--purple-l:#F5F3FF;--teal:#0891B2;--teal-l:#ECFEFF;--g50:#F9FAFB;--g100:#F3F4F6;--g200:#E5E7EB;--g300:#D1D5DB;--g400:#9CA3AF;--g500:#6B7280;--g600:#4B5563;--g700:#374151;--g800:#1F2937;--g900:#111827;--sh:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--g100);color:var(--g800);min-height:100vh;}
+.screen{display:none;min-height:100vh;flex-direction:column;}
+.screen.active{display:flex;animation:fu .18s ease;}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.topbar{background:#fff;border-bottom:1px solid var(--g200);padding:0 16px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--sh);}
+.logo{font-size:21px;font-weight:900;color:var(--blue);letter-spacing:-.5px;}.logo span{color:var(--green);}
+.back{background:none;border:none;cursor:pointer;color:var(--blue);font-size:14px;font-weight:600;display:flex;align-items:center;gap:3px;}.back:hover{text-decoration:underline;}
+.tr{display:flex;align-items:center;gap:12px;}
+.av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;}
+.av-p{background:var(--blue);}.av-a{background:var(--teal);}.av-ph{background:var(--green);}.av-m{background:var(--purple);}
+.notif{position:relative;cursor:pointer;font-size:20px;line-height:1;}
+.ndot{width:8px;height:8px;background:var(--red);border-radius:50%;position:absolute;top:-2px;right:-2px;}
+.bnav{background:#fff;border-top:1px solid var(--g200);display:flex;position:fixed;bottom:0;left:0;right:0;z-index:100;height:60px;}
+.tbb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;cursor:pointer;color:var(--g400);font-size:10px;font-weight:500;transition:color .15s;}
+.tbb.on{color:var(--blue);}.tbb svg{width:22px;height:22px;}
+.page{padding:16px;padding-bottom:80px;flex:1;max-width:480px;margin:0 auto;width:100%;}
+.card{background:#fff;border-radius:12px;box-shadow:var(--sh);padding:16px;margin-bottom:12px;}
+.ctitle{font-size:11px;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
+.tag{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;white-space:nowrap;}
+.tg{background:var(--green-l);color:var(--green);}.to{background:var(--orange-l);color:var(--orange);}
+.tr2{background:var(--red-l);color:var(--red);}.tb{background:var(--blue-l);color:var(--blue);}
+.tgr{background:var(--g100);color:var(--g500);}.tp{background:var(--purple-l);color:var(--purple);}
+.tt{background:var(--teal-l);color:var(--teal);}
+.alert{display:flex;gap:10px;padding:12px 14px;border-radius:10px;margin-bottom:10px;align-items:flex-start;}
+.ao{background:var(--orange-l);border:1px solid #FDE68A;}
+.ar{background:var(--red-l);border:1px solid #FECACA;}
+.ag{background:var(--green-l);border:1px solid #BBF7D0;}
+.ab{background:var(--blue-l);border:1px solid var(--blue-m);}
+.at{background:var(--teal-l);border:1px solid #A5F3FC;}
+.ai{font-size:18px;flex-shrink:0;margin-top:1px;}
+.ab2{font-size:13px;color:var(--g700);}
+.ab2 strong{display:block;font-weight:700;color:var(--g800);margin-bottom:2px;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border-radius:8px;font-size:14px;font-weight:600;border:none;cursor:pointer;transition:all .15s;}
+.bp{background:var(--blue);color:#fff;}.bp:hover{background:#1D4ED8;}
+.bs{background:var(--g100);color:var(--g700);}.bs:hover{background:var(--g200);}
+.bg{background:var(--green);color:#fff;}.bg:hover{background:#15803D;}
+.bo{background:#fff;color:var(--blue);border:1.5px solid var(--blue);}
+.bsm{padding:6px 12px;font-size:12px;}.blg{padding:14px 24px;font-size:16px;}.bfw{width:100%;}
+.li{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--g100);cursor:pointer;}
+.li:last-child{border-bottom:none;padding-bottom:0;}
+.li:hover{background:var(--g50);margin:0 -16px;padding-left:16px;padding-right:16px;border-radius:8px;}
+.lic{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.icb{background:var(--blue-l);}.icg{background:var(--green-l);}.ico{background:var(--orange-l);}.icr{background:var(--red-l);}.ict{background:var(--teal-l);}
+.lin{flex:1;min-width:0;}
+.liname{font-size:14px;font-weight:600;color:var(--g800);}
+.lisub{font-size:12px;color:var(--g500);margin-top:2px;}
+.prog{height:7px;background:var(--g200);border-radius:4px;overflow:hidden;margin-top:5px;}
+.pf{height:100%;border-radius:4px;}
+.mover{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center;}
+.mover.show{display:flex;}
+.modal{background:#fff;border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;}
+.mhandle{width:40px;height:4px;background:var(--g300);border-radius:2px;margin:0 auto 20px;}
+.mtitle{font-size:18px;font-weight:800;color:var(--g900);margin-bottom:16px;}
+.fg{margin-bottom:14px;}
+.fl{font-size:13px;font-weight:600;color:var(--g600);margin-bottom:6px;display:block;}
+.fi{width:100%;padding:10px 12px;border:1.5px solid var(--g200);border-radius:8px;font-size:14px;color:var(--g800);outline:none;transition:border-color .15s;background:#fff;}
+.fi:focus{border-color:var(--blue);}
+select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236B7280' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+.scanzone{border:2px dashed var(--blue-m);border-radius:12px;padding:32px 16px;text-align:center;margin-bottom:16px;background:var(--blue-l);cursor:pointer;transition:all .2s;}
+.scanzone:hover{border-color:var(--blue);}
+.sh2{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.stitle{font-size:16px;font-weight:700;color:var(--g900);}
+.sact{font-size:13px;color:var(--blue);font-weight:500;cursor:pointer;background:none;border:none;}
+.sl{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--g100);font-size:13px;}
+.sl:last-child{border-bottom:none;}
+.slbl{color:var(--g600);}.sval{font-weight:700;color:var(--g900);}
+.div{height:1px;background:var(--g200);margin:12px 0;}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.kgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.kpi{background:#fff;border-radius:12px;padding:14px;box-shadow:var(--sh);}
+.kv{font-size:28px;font-weight:900;line-height:1;}.kl{font-size:12px;color:var(--g500);margin-top:4px;}.ks{font-size:11px;font-weight:700;margin-top:6px;}
+.up{color:var(--green);}.dn{color:var(--red);}
+.arm-card{background:linear-gradient(135deg,#2563EB,#1D4ED8);border-radius:16px;padding:20px;color:#fff;margin-bottom:12px;cursor:pointer;transition:transform .15s;}
+.arm-card:hover{transform:translateY(-2px);}
+.arm-card-name{font-size:18px;font-weight:800;margin-bottom:4px;}
+.arm-card-sub{font-size:13px;opacity:.8;}
+.arm-card-stats{display:flex;gap:16px;margin-top:12px;}
+.arm-stat{font-size:12px;opacity:.85;}
+.arm-stat strong{display:block;font-size:22px;font-weight:800;opacity:1;}
+.bdpm{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;background:var(--teal-l);color:var(--teal);padding:2px 7px;border-radius:20px;border:1px solid #A5F3FC;}
+.mstep{display:flex;align-items:flex-start;gap:10px;padding:10px;border-radius:8px;margin-bottom:6px;}
+.mstep-ok{background:var(--green-l);}.mstep-warn{background:var(--orange-l);}.mstep-ko{background:var(--red-l);}
+.mstep-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;margin-top:1px;}
+.mstep-num-ok{background:var(--green);}.mstep-num-warn{background:var(--orange);}.mstep-num-ko{background:var(--red);}
+.mstep-text{flex:1;}
+.mstep-label{font-size:13px;font-weight:700;}.mstep-detail{font-size:12px;color:var(--g600);margin-top:2px;}
+.psum{border-radius:12px;overflow:hidden;margin-bottom:12px;}
+.psum-header{padding:10px 14px;font-size:13px;font-weight:700;}
+.psum-have{background:var(--green);color:#fff;}.psum-buy{background:var(--red);color:#fff;}
+.psum-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fff;border-bottom:1px solid var(--g100);font-size:13px;}
+.psum-item:last-child{border-bottom:none;}
+.annot{background:var(--orange-l);border:1px solid #FDE68A;border-radius:10px;padding:12px;margin-bottom:8px;}
+.annot-who{font-size:11px;font-weight:700;color:var(--orange);margin-bottom:4px;}
+.annot-text{font-size:13px;color:var(--g700);}
+.mi{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--g100);}
+.mi:last-child{border-bottom:none;}
+.mis{font-size:20px;flex-shrink:0;}.min{flex:1;}.miname{font-size:14px;font-weight:600;}.midet{font-size:12px;color:var(--g500);margin-top:2px;}
+.opr{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.opl{font-size:13px;color:var(--g600);flex:0 0 150px;}
+.opb{flex:1;height:8px;background:var(--g200);border-radius:4px;overflow:hidden;}
+.opf{height:100%;border-radius:4px;}
+.opv{font-size:13px;font-weight:700;width:35px;text-align:right;}
+.cwrap{width:100%;overflow:hidden;}.cwrap svg{width:100%;display:block;}
+#screen-login{background:#fff;}
+.lhero{padding:52px 24px 24px;text-align:center;}
+.llogo{font-size:44px;font-weight:900;color:var(--blue);letter-spacing:-1px;margin-bottom:8px;}.llogo span{color:var(--green);}
+.ltag{font-size:15px;color:var(--g500);line-height:1.5;max-width:280px;margin:0 auto 32px;}
+.pcards{padding:0 24px 40px;display:flex;flex-direction:column;gap:10px;max-width:400px;margin:0 auto;}
+.pcard{background:#fff;border:2px solid var(--g200);border-radius:14px;padding:16px 20px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:all .2s;}
+.pcard:hover{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-l);}
+.pcico{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.pcname{font-size:15px;font-weight:700;color:var(--g900);}.pcsub{font-size:12px;color:var(--g500);margin-top:2px;}.pcarr{font-size:22px;color:var(--g300);}
+.greet{font-size:22px;font-weight:800;color:var(--g900);}.greet span{color:var(--blue);}
+.greetsub{font-size:14px;color:var(--g500);margin-top:4px;margin-bottom:20px;}
+.obs-ring{position:relative;width:72px;height:72px;flex-shrink:0;}
+.obs-ring svg{transform:rotate(-90deg);}
+.obs-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:var(--g900);}
+.wd-row{display:flex;gap:6px;justify-content:space-between;}
+.wd-pill{text-align:center;flex:1;}
+.wd-lbl{font-size:10px;color:var(--g400);font-weight:600;}
+.wd-dot{width:28px;height:28px;border-radius:50%;margin:4px auto;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+.wok{background:var(--green);color:#fff;}.wmiss{background:var(--red-l);color:var(--red);}.wpart{background:var(--orange-l);color:var(--orange);}.wtoday{background:var(--blue);color:#fff;}.wfut{background:var(--g100);color:var(--g400);}
+.dose-card{background:var(--g50);border-radius:10px;padding:12px;margin-bottom:8px;border:1px solid var(--g200);}
+.dose-name{font-size:14px;font-weight:700;color:var(--g800);margin-bottom:2px;}
+.dose-posologie{font-size:12px;color:var(--blue);font-weight:600;margin-bottom:6px;}
+.dose-pills{display:flex;gap:6px;flex-wrap:wrap;}
+.dose-pill{padding:5px 10px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .15s;}
+.dp-done{background:var(--green);color:#fff;}.dp-todo{background:#fff;color:var(--g600);border:1.5px solid var(--g300);}.dp-todo:hover{border-color:var(--blue);color:var(--blue);}
+.posol-box{background:var(--blue-l);border:1.5px solid var(--blue-m);border-radius:10px;padding:12px;margin-bottom:8px;}
+.posol-drug{font-size:14px;font-weight:700;color:var(--g800);margin-bottom:4px;}
+.posol-extracted{font-size:13px;color:var(--blue);font-weight:600;margin-bottom:8px;}
+.posol-reminders{display:flex;gap:6px;flex-wrap:wrap;}
+.rem-chip{background:#fff;border:1.5px solid var(--blue-m);border-radius:20px;padding:4px 10px;font-size:12px;font-weight:600;color:var(--blue);display:flex;align-items:center;gap:4px;}
+#toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--g800);color:#fff;padding:10px 18px;border-radius:20px;font-size:14px;font-weight:500;z-index:300;opacity:0;transition:all .2s;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis;pointer-events:none;}
+.ansm{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;background:var(--red-l);color:var(--red);padding:2px 7px;border-radius:20px;border:1px solid #FECACA;}
+.prof-tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;}
+/* ── PROFIL ── */
+.pf-hero{background:linear-gradient(135deg,var(--blue),#1D4ED8);padding:28px 20px 32px;display:flex;flex-direction:column;align-items:center;gap:10px;}
+.pf-avatar-wrap{position:relative;}
+.pf-avatar{width:84px;height:84px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:34px;color:#fff;border:3px solid rgba(255,255,255,.5);}
+.pf-avatar-edit{position:absolute;bottom:2px;right:2px;width:26px;height:26px;background:#F59E0B;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #fff;font-size:12px;}
+.pf-name{font-size:20px;font-weight:800;color:#fff;}.pf-sub{font-size:13px;color:rgba(255,255,255,.75);}
+.pf-badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px;}
+.pf-badge{background:rgba(255,255,255,.18);color:#fff;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.3);}
+.pf-badge.ald{background:rgba(245,158,11,.35);border-color:#F59E0B;}
+.pf-section{background:#fff;border-radius:12px;box-shadow:var(--sh);overflow:hidden;margin-bottom:12px;}
+.pf-sec-header{padding:14px 16px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--g200);cursor:pointer;user-select:none;}
+.pf-sec-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.pf-sec-title{flex:1;font-size:15px;font-weight:700;color:var(--g900);}
+.pf-sec-chevron{color:var(--g400);font-size:14px;transition:transform .2s;}
+.pf-section.collapsed .pf-sec-chevron{transform:rotate(-90deg);}
+.pf-sec-body{padding:16px;display:flex;flex-direction:column;gap:14px;}
+.pf-section.collapsed .pf-sec-body{display:none;}
+.pf-radio-group{display:flex;gap:8px;flex-wrap:wrap;}
+.pf-rc input{display:none;}.pf-rc label{display:flex;align-items:center;gap:5px;padding:8px 14px;border:1.5px solid var(--g200);border-radius:20px;font-size:13px;font-weight:500;color:var(--g700);cursor:pointer;transition:all .15s;}
+.pf-rc input:checked+label{border-color:var(--blue);background:var(--blue-l);color:var(--blue);font-weight:600;}
+.pf-toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.pf-ti{flex:1;}.pf-tl{font-size:14px;font-weight:500;color:var(--g800);}.pf-td{font-size:12px;color:var(--g500);margin-top:2px;}
+.pf-toggle{position:relative;width:44px;height:26px;flex-shrink:0;}
+.pf-toggle input{display:none;}
+.pf-tslider{position:absolute;inset:0;background:#CDD8D5;border-radius:13px;cursor:pointer;transition:background .2s;}
+.pf-tslider::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.pf-toggle input:checked+.pf-tslider{background:var(--blue);}
+.pf-toggle input:checked+.pf-tslider::after{transform:translateX(18px);}
+.pf-tags{display:flex;flex-wrap:wrap;gap:6px;padding:8px 12px;border:1.5px solid var(--g200);border-radius:8px;background:var(--g50);min-height:44px;}
+.pf-tag{background:var(--blue-l);color:var(--blue);font-size:12px;font-weight:600;padding:4px 8px;border-radius:20px;display:flex;align-items:center;gap:4px;}
+.pf-tag.danger{background:var(--red-l);color:var(--red);}
+.pf-tag-rm{cursor:pointer;font-size:14px;line-height:1;opacity:.7;}
+.pf-tag-add{font-size:12px;color:var(--g500);cursor:pointer;padding:4px 8px;border:1.5px dashed var(--g300);border-radius:20px;}
+.pf-auth-opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--g200);border-radius:10px;cursor:pointer;transition:border-color .15s;margin-bottom:8px;}
+.pf-auth-opt.active{border-color:var(--blue);background:var(--blue-l);}
+.pf-auth-icon{font-size:22px;width:36px;text-align:center;}.pf-auth-info{flex:1;}
+.pf-auth-name{font-size:14px;font-weight:600;color:var(--g800);}.pf-auth-sub{font-size:12px;color:var(--g500);}
+.pf-auth-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--g300);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:transparent;}
+.pf-auth-opt.active .pf-auth-check{background:var(--blue);border-color:var(--blue);color:#fff;}
+.pf-pharma-card{border:1.5px solid var(--g200);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;}
+.pf-pharma-logo{width:48px;height:48px;border-radius:10px;background:var(--blue-l);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.pf-contact-card{border:1.5px solid var(--g200);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.pf-contact-av{width:40px;height:40px;border-radius:50%;background:#EEF0FF;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.pf-row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.pf-sensitive{position:relative;}.pf-sensitive .fi{padding-right:40px;}
+.pf-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--g400);font-size:16px;}
+.pf-prog-track{height:8px;background:var(--g200);border-radius:4px;overflow:hidden;margin-top:6px;}
+.pf-prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),#3B82F6);border-radius:4px;transition:width .4s;}
+</style>
+</head><body>
+
+<!-- LOGIN -->
+<div id="screen-login" class="screen active">
+  <div class="lhero">
+    <div class="llogo">Med<span>ly</span></div>
+    <p class="ltag">Gérez votre armoire à pharmacie, évitez les achats redondants, restez en sécurité.</p>
+  </div>
+  <div class="pcards">
+    <p style="font-size:12px;color:var(--g400);text-align:center;font-weight:500;margin-bottom:2px;">Choisir un profil pour tester le prototype</p>
+    <div class="pcard" onclick="go('patient-home')">
+      <div class="pcico" style="background:var(--blue-l);">👤</div>
+      <div style="flex:1;"><div class="pcname">Sophie Martin</div><div class="pcsub">Patient — Gestion de mon armoire</div></div>
+      <div class="pcarr">›</div>
+    </div>
+    <div class="pcard" onclick="go('aidant-home')">
+      <div class="pcico" style="background:var(--teal-l);">👨‍👩‍👧</div>
+      <div style="flex:1;"><div class="pcname">Jean Martin</div><div class="pcsub">Aidant familial — 3 armoires gérées</div></div>
+      <div class="pcarr">›</div>
+    </div>
+    <div class="pcard" onclick="go('pharma-home')">
+      <div class="pcico" style="background:var(--green-l);">🏥</div>
+      <div style="flex:1;"><div class="pcname">Dr. Pierre Durand</div><div class="pcsub">Pharmacien — Espace professionnel</div></div>
+      <div class="pcarr">›</div>
+    </div>
+    <div class="pcard" onclick="go('mutuelle-home')">
+      <div class="pcico" style="background:var(--purple-l);">📊</div>
+      <div style="flex:1;"><div class="pcname">MGEN — Innovation</div><div class="pcsub">Organisme payeur — Analytics & Économies</div></div>
+      <div class="pcarr">›</div>
+    </div>
+    <div style="text-align:center;margin-top:6px;">
+      <span style="font-size:11px;background:var(--blue-l);color:var(--blue);padding:4px 12px;border-radius:20px;font-weight:600;">🧪 Prototype v0.3 — Profil patient intégré</span>
+    </div>
+  </div>
+</div>
+
+<!-- PATIENT — ACCUEIL -->
+<div id="screen-patient-home" class="screen">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px;"><div class="logo" onclick="go('login')" style="cursor:pointer;" title="Accueil prototype">Med<span>ly</span></div></div>
+    <div class="tr">
+      <div class="notif" onclick="toast('Voir toutes les alertes')"><span>🔔</span><div class="ndot"></div></div>
+      <div class="av av-p" style="cursor:pointer;" onclick="go('patient-profil')" title="Mon profil">SM</div>
+    </div>
+  </div>
+  <div class="page">
+    <div class="greet">Bonjour, <span>Sophie</span> 👋</div>
+    <div class="greetsub">Mardi 27 mai 2026 · Mon armoire — 12 produits</div>
+    <div class="alert at"><div class="ai">🚨</div><div class="ab2"><strong>Rappel de lot ANSM — Action requise</strong>Doliprane 1000mg (lot FR-24-08821) fait l'objet d'un rappel. Rapportez ce médicament à votre pharmacie.<button class="btn bp bsm" style="margin-top:8px;font-size:11px;" onclick="toast('Lien ANSM ouvert')">Voir l'avis ANSM</button></div></div>
+    <div class="alert ar"><div class="ai">⏰</div><div class="ab2"><strong>Péremption dans 7 jours</strong>Lisinopril 10mg expire le 03/06/2026 — 6 comprimés restants</div></div>
+    <div class="alert ao"><div class="ai">📉</div><div class="ab2"><strong>Stock bas</strong>Oméprazole 20mg — 3 gélules restantes (seuil paramétré : 5)</div></div>
+    <div class="alert ab"><div class="ai">📅</div><div class="ab2"><strong>Péremption dans 30 jours</strong>Amoxicilline 500mg expire le 26/06/2026</div></div>
+    <div class="sh2" style="margin-top:4px;"><div class="stitle">Accès rapides</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+      <div class="card" style="margin-bottom:0;cursor:pointer;" onclick="go('patient-armoire')">
+        <div style="font-size:28px;margin-bottom:6px;">🗄️</div>
+        <div style="font-size:14px;font-weight:700;">Mon armoire</div>
+        <div style="font-size:12px;color:var(--g500);margin-top:2px;">12 produits</div>
+        <span class="tag tr2" style="margin-top:8px;display:inline-flex;">1 rappel ANSM</span>
+      </div>
+      <div class="card" style="margin-bottom:0;cursor:pointer;" onclick="go('patient-ordonnances')">
+        <div style="font-size:28px;margin-bottom:6px;">📋</div>
+        <div style="font-size:14px;font-weight:700;">Ordonnances</div>
+        <div style="font-size:12px;color:var(--g500);margin-top:2px;">2 actives</div>
+        <span class="tag to" style="margin-top:8px;display:inline-flex;">1 à vérifier</span>
+      </div>
+      <div class="card" style="margin-bottom:0;cursor:pointer;grid-column:span 2;" onclick="go('patient-partage')">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:22px;">🔗</div>
+          <div><div style="font-size:14px;font-weight:700;">Partager avec mon pharmacien</div><div style="font-size:12px;color:var(--g500);">Générer un code d'accès temporaire (48h)</div></div>
+          <div style="margin-left:auto;font-size:20px;color:var(--g300);">›</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="cursor:pointer;" onclick="go('patient-observance')">
+      <div class="sh2" style="margin-bottom:10px;"><div class="stitle">📊 Mon observance</div><span class="tag tg">87%</span></div>
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;">
+        <div class="obs-ring"><svg viewBox="0 0 72 72" width="72" height="72"><circle cx="36" cy="36" r="30" fill="none" stroke="#E5E7EB" stroke-width="7"/><circle cx="36" cy="36" r="30" fill="none" stroke="#16A34A" stroke-width="7" stroke-dasharray="188.5" stroke-dashoffset="24.5" stroke-linecap="round"/></svg><div class="obs-pct">87%</div></div>
+        <div style="flex:1;">
+          <div class="wd-row">
+            <div class="wd-pill"><div class="wd-lbl">L</div><div class="wd-dot wok">✓</div></div>
+            <div class="wd-pill"><div class="wd-lbl">M</div><div class="wd-dot wok">✓</div></div>
+            <div class="wd-pill"><div class="wd-lbl">Me</div><div class="wd-dot wmiss">✗</div></div>
+            <div class="wd-pill"><div class="wd-lbl">J</div><div class="wd-dot wok">✓</div></div>
+            <div class="wd-pill"><div class="wd-lbl">V</div><div class="wd-dot wok">✓</div></div>
+            <div class="wd-pill"><div class="wd-lbl">S</div><div class="wd-dot wok">✓</div></div>
+            <div class="wd-pill"><div class="wd-lbl">D</div><div class="wd-dot wtoday">•</div></div>
+          </div>
+          <div style="font-size:11px;color:var(--g500);margin-top:4px;">1 prise manquée cette semaine · Voir le détail →</div>
+        </div>
+      </div>
+      <div style="background:linear-gradient(135deg,#2563EB,#1D4ED8);border-radius:10px;padding:12px;color:#fff;display:flex;align-items:center;justify-content:space-between;">
+        <div><div style="font-size:11px;opacity:.75;font-weight:600;text-transform:uppercase;letter-spacing:.4px;">Prochaine prise</div><div style="font-size:16px;font-weight:800;margin-top:2px;">Metformine 500mg</div><div style="font-size:12px;opacity:.85;margin-top:2px;">⏰ 12h30 · 1 cp avec le repas</div></div>
+        <button class="btn bsm" style="background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.5);color:#fff;" onclick="event.stopPropagation();toast('✅ Prise de 12h30 confirmée !')">Confirmer</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctitle">État de mon armoire</div>
+      <div class="sl"><span class="slbl">Produits valides</span><span class="sval" style="color:var(--green);">9</span></div>
+      <div class="sl"><span class="slbl">Expirant dans 30 jours</span><span class="sval" style="color:var(--orange);">2</span></div>
+      <div class="sl"><span class="slbl">Périmés (à retirer)</span><span class="sval" style="color:var(--red);">1</span></div>
+      <div class="sl"><span class="slbl">Rappel de lot ANSM actif</span><span class="sval" style="color:var(--red);">1</span></div>
+      <div class="sl"><span class="slbl">Produits identifiés BDPM</span><span class="sval" style="color:var(--teal);">10 / 12</span></div>
+    </div>
+  </div>
+  <div class="bnav">
+    <button class="tbb on" onclick="go('patient-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</button>
+    <button class="tbb" onclick="go('patient-armoire')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Armoire</button>
+    <button class="tbb" onclick="go('patient-ordonnances')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Ordonnances</button>
+    <button class="tbb" onclick="go('patient-profil')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil</button>
+  </div>
+</div>
+
+<!-- PATIENT — ARMOIRE -->
+<div id="screen-patient-armoire" class="screen">
+  <div class="topbar">
+    <div><button class="back" onclick="go('patient-home')">← Accueil</button></div>
+    <div class="tr"><button class="btn bp bsm" onclick="openModal('modal-scan')">+ Scanner</button></div>
+  </div>
+  <div class="page">
+    <div class="sh2"><div class="stitle">🗄️ Mon armoire à pharmacie</div></div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;">
+      <span class="chip" style="background:var(--blue);color:#fff;">Tous (12)</span>
+      <span class="chip" style="background:var(--red-l);color:var(--red);" onclick="toast('Filtre : Rappels ANSM')">🚨 ANSM (1)</span>
+      <span class="chip" style="background:var(--red-l);color:var(--red);" onclick="toast('Filtre : Périmés')">❌ Périmés (1)</span>
+      <span class="chip" style="background:var(--orange-l);color:var(--orange);" onclick="toast('Filtre : Expirants')">⏰ J-30 (2)</span>
+      <span class="chip" style="background:var(--g100);color:var(--g600);" onclick="toast('Filtre : OTC')">OTC (4)</span>
+    </div>
+    <div class="card" style="border-left:4px solid var(--red);">
+      <div class="li" onclick="showProduct('doliprane')" style="padding-top:0;">
+        <div class="lic icr">💊</div>
+        <div class="lin"><div class="liname">Doliprane 1000mg</div><div style="display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap;"><span class="ansm">🚨 Rappel ANSM</span><span style="font-size:11px;color:var(--g400);">Paracétamol · OTC · 8 cp restants</span></div></div>
+        <span class="tag tr2">Urgent</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="li" onclick="showProduct('lisinopril')">
+        <div class="lic icr">💊</div>
+        <div class="lin"><div class="liname">Lisinopril 10mg</div><div class="lisub">Zestril® · DCI : Lisinopril · Ordonnance</div><div style="display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap;"><span class="bdpm">BDPM ✓</span><span style="font-size:11px;color:var(--red);font-weight:600;">⏰ Expire 03/06/2026 · 6 cp restants</span></div></div>
+        <span class="tag tr2">J-7</span>
+      </div>
+      <div class="li" onclick="showProduct('metformine')">
+        <div class="lic icb">💊</div>
+        <div class="lin"><div class="liname">Metformine 500mg</div><div class="lisub">Glucophage® · DCI : Metformine · Ordonnance</div><div style="display:flex;align-items:center;gap:6px;margin-top:3px;"><span class="bdpm">BDPM ✓</span><span style="font-size:11px;color:var(--g400);">39 cp restants · expire 08/2026</span></div><div class="prog" style="max-width:120px;margin-top:4px;"><div class="pf" style="width:65%;background:var(--green);"></div></div></div>
+        <span class="tag tg">Valide</span>
+      </div>
+      <div class="li" onclick="showProduct('amoxicilline')">
+        <div class="lic ico">💊</div>
+        <div class="lin"><div class="liname">Amoxicilline 500mg</div><div class="lisub">Clamoxyl® · DCI : Amoxicilline · Ordonnance</div><div style="display:flex;align-items:center;gap:6px;margin-top:3px;"><span class="bdpm">BDPM ✓</span><span style="font-size:11px;color:var(--orange);font-weight:600;">Expire 26/06/2026 · 24 gélules restantes</span></div></div>
+        <span class="tag to">J-30</span>
+      </div>
+      <div class="li" onclick="showProduct('atorvastatine')">
+        <div class="lic icb">💊</div>
+        <div class="lin"><div class="liname">Atorvastatine 20mg</div><div class="lisub">Tahor® · DCI : Atorvastatine · Ordonnance</div><div style="display:flex;align-items:center;gap:6px;margin-top:3px;"><span class="bdpm">BDPM ✓</span><span style="font-size:11px;color:var(--g400);">72 cp restants · expire 12/2026</span></div><div class="prog" style="max-width:120px;margin-top:4px;"><div class="pf" style="width:80%;background:var(--green);"></div></div></div>
+        <span class="tag tg">Valide</span>
+      </div>
+      <div class="li" onclick="showProduct('arnica')">
+        <div class="lic icg">🧴</div>
+        <div class="lin"><div class="liname">Arnica gel 40g</div><div class="lisub">OTC · Saisie manuelle · Emplacement : Salle de bain</div><div style="font-size:11px;color:var(--g400);margin-top:3px;">1 tube restant · Expire 02/2028</div></div>
+        <span class="tag tgr">Manuel</span>
+      </div>
+      <div class="li" onclick="toast('Voir tous les produits')"><div style="color:var(--blue);font-size:13px;font-weight:600;width:100%;text-align:center;">+ 7 autres produits →</div></div>
+    </div>
+    <button class="btn bo bfw" onclick="openModal('modal-scan')">📷 Scanner un médicament (code CIP/EAN)</button>
+    <button class="btn bs bfw" style="margin-top:8px;" onclick="openModal('modal-manual')">✏️ Saisie manuelle</button>
+  </div>
+  <div class="bnav">
+    <button class="tbb" onclick="go('patient-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</button>
+    <button class="tbb on" onclick="go('patient-armoire')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Armoire</button>
+    <button class="tbb" onclick="go('patient-ordonnances')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Ordonnances</button>
+    <button class="tbb" onclick="go('patient-profil')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil</button>
+  </div>
+</div>
+
+<!-- PATIENT — DÉTAIL PRODUIT -->
+<div id="screen-patient-produit-detail" class="screen">
+  <div class="topbar"><div><button class="back" onclick="go('patient-armoire')">← Armoire</button></div><div class="tr"><button class="btn bs bsm" onclick="toast('Produit modifié')">Modifier</button></div></div>
+  <div class="page">
+    <div class="card">
+      <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;">
+        <div id="pd-icon" style="width:60px;height:60px;background:var(--blue-l);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;">💊</div>
+        <div><div id="pd-name" style="font-size:20px;font-weight:800;color:var(--g900);">Metformine 500mg</div><div id="pd-brand" style="font-size:13px;color:var(--g500);">Glucophage® · Merck Serono</div><div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;"><span id="pd-bdpm-badge" class="bdpm">BDPM ✓</span><span id="pd-status-tag" class="tag tg">Valide</span><span id="pd-type-tag" class="tag tb">Ordonnance</span></div></div>
+      </div>
+      <div class="ctitle">Informations BDPM</div>
+      <div class="sl"><span class="slbl">DCI</span><span id="pd-dci" class="sval">Metformine chlorhydrate</span></div>
+      <div class="sl"><span class="slbl">Forme galénique</span><span id="pd-form" class="sval">Comprimé pelliculé</span></div>
+      <div class="sl"><span class="slbl">Dosage</span><span id="pd-dosage" class="sval">500 mg</span></div>
+      <div class="sl"><span class="slbl">Code CIP-13</span><span id="pd-cip" class="sval" style="font-family:monospace;font-size:12px;">3400936413990</span></div>
+      <div class="sl"><span class="slbl">Laboratoire</span><span id="pd-lab" class="sval">Merck Serono SAS</span></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Mon stock</div>
+      <div class="sl"><span class="slbl">Quantité restante</span><span id="pd-qty" class="sval" style="color:var(--green);">39 comprimés</span></div>
+      <div class="sl"><span class="slbl">Date de péremption</span><span id="pd-expiry" class="sval">08/2026</span></div>
+      <div class="sl"><span class="slbl">Emplacement</span><span id="pd-location" class="sval">Armoire salle de bain</span></div>
+      <div class="sl"><span class="slbl">Ajouté le</span><span id="pd-added" class="sval">12 mars 2026</span></div>
+      <div style="margin-top:10px;"><div style="font-size:12px;font-weight:600;color:var(--g500);margin-bottom:4px;">Niveau de stock</div><div class="prog"><div id="pd-progress" class="pf" style="width:65%;background:var(--green);"></div></div><div id="pd-stock-label" style="font-size:11px;color:var(--g400);margin-top:3px;">39 / 60 comprimés restants</div></div>
+    </div>
+    <div class="card"><div class="ctitle">Notes</div><textarea class="fi" style="height:70px;resize:none;" placeholder="Ajouter une note personnelle...">Prendre avec les repas.</textarea></div>
+    <div class="annot"><div class="annot-who">💬 Annotation — Dr. Durand (Pharmacie Durand) · 20 mai 2026</div><div class="annot-text">RAS pour ce produit. Pensez à renouveler votre ordonnance dans 3 semaines.</div></div>
+    <div style="display:flex;gap:8px;"><button class="btn bs" style="flex:1;" onclick="toast('Stock mis à jour')">Mettre à jour le stock</button><button class="btn" style="flex:1;background:var(--red-l);color:var(--red);" onclick="toast('Produit retiré')">Retirer</button></div>
+  </div>
+</div>
+
+<!-- MODAL SCAN -->
+<div class="mover" id="modal-scan"><div class="modal"><div class="mhandle"></div><div class="mtitle">📷 Scanner un médicament</div><div class="scanzone" onclick="simScan()"><div style="font-size:48px;margin-bottom:8px;">📷</div><div style="font-size:15px;font-weight:700;color:var(--blue);">Pointer vers le code-barres</div><p style="font-size:13px;color:var(--g500);margin-top:6px;">CIP-13 · CIP-7 · EAN-13 supportés</p></div><div style="text-align:center;color:var(--g400);font-size:13px;margin-bottom:16px;">— ou saisir le code manuellement —</div><div class="fg"><label class="fl">Code CIP / EAN</label><input class="fi" type="text" placeholder="Ex : 3400936413990"></div><div style="display:flex;gap:8px;"><button class="btn bs" style="flex:1;" onclick="closeModal('modal-scan')">Annuler</button><button class="btn bp" style="flex:2;" onclick="simScan()">🔍 Identifier via BDPM</button></div></div></div>
+
+<!-- MODAL RÉSULTAT SCAN -->
+<div class="mover" id="modal-scan-result"><div class="modal"><div class="mhandle"></div><div class="mtitle">✅ Produit identifié — BDPM</div><div class="alert ag"><div class="ai">✅</div><div class="ab2"><strong>Amoxicilline 500mg — Clamoxyl®</strong>DCI : Amoxicilline trihydrate · GSK · Code CIP-13 : 3400935225418</div></div><div style="background:var(--g50);border-radius:10px;padding:12px;margin-bottom:14px;"><div class="sl"><span class="slbl">Forme galénique</span><span class="sval">Gélule</span></div><div class="sl"><span class="slbl">Classe thérapeutique</span><span class="sval">Antibiotique — Pénicillines</span></div><div class="sl"><span class="slbl">Statut AMM</span><span class="sval" style="color:var(--green);">Commercialisé ✓</span></div><div class="sl"><span class="slbl">Rappel de lot actif</span><span class="sval" style="color:var(--green);">Aucun ✓</span></div><div class="sl"><span class="slbl">Déjà dans l'armoire ?</span><span class="sval" style="color:var(--orange);">Oui — 8 gélules restantes</span></div></div><div class="fg"><label class="fl">Quantité ajoutée (gélules)</label><input class="fi" type="number" value="24" min="1"></div><div class="fg"><label class="fl">Date de péremption</label><input class="fi" type="month" value="2027-06"></div><div class="fg"><label class="fl">Emplacement (optionnel)</label><input class="fi" type="text" placeholder="Ex : Armoire cuisine…"></div><div style="display:flex;gap:8px;"><button class="btn bs" style="flex:1;" onclick="closeModal('modal-scan-result');openModal('modal-scan')">← Rescanner</button><button class="btn bg" style="flex:2;" onclick="closeModal('modal-scan-result');toast('✅ Amoxicilline ajoutée à l\'armoire')">Ajouter à l'armoire</button></div></div></div>
+
+<!-- MODAL SAISIE MANUELLE -->
+<div class="mover" id="modal-manual"><div class="modal"><div class="mhandle"></div><div class="mtitle">✏️ Saisie manuelle</div><div class="alert ab"><div class="ai">💡</div><div class="ab2">Pour les produits OTC, parapharmaceutiques ou compléments non référencés dans la BDPM.</div></div><div class="fg"><label class="fl">Nom du produit *</label><input class="fi" type="text" placeholder="Ex : Arnica gel Boiron"></div><div class="fg"><label class="fl">Forme galénique</label><select class="fi"><option>Comprimé</option><option>Gélule</option><option>Solution buvable</option><option>Pommade / Gel</option><option>Spray</option><option>Ampoule</option><option>Autre</option></select></div><div class="fg"><label class="fl">Quantité restante *</label><input class="fi" type="text" placeholder="Ex : 24 comprimés, 150 ml…"></div><div class="fg"><label class="fl">Date de péremption *</label><input class="fi" type="month"></div><div class="fg"><label class="fl">Emplacement (optionnel)</label><input class="fi" type="text" placeholder="Ex : Armoire cuisine…"></div><div style="display:flex;gap:8px;"><button class="btn bs" style="flex:1;" onclick="closeModal('modal-manual')">Annuler</button><button class="btn bp" style="flex:2;" onclick="closeModal('modal-manual');toast('✅ Produit ajouté à l\'armoire')">Ajouter à l'armoire</button></div></div></div>
+
+<!-- PATIENT — ORDONNANCES -->
+<div id="screen-patient-ordonnances" class="screen">
+  <div class="topbar"><div><button class="back" onclick="go('patient-home')">← Accueil</button></div><div class="tr"><button class="btn bp bsm" onclick="go('patient-add-ordonnance')">+ Ajouter</button></div></div>
+  <div class="page">
+    <div class="sh2"><div class="stitle">📋 Mes ordonnances</div></div>
+    <div class="card" style="cursor:pointer;" onclick="go('patient-matching')">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;"><div><div style="font-size:15px;font-weight:700;">Dr. Claire Moreau</div><div style="font-size:12px;color:var(--g500);">Médecin généraliste · 15 mai 2026</div></div><span class="tag to">À vérifier</span></div>
+      <div style="background:var(--g50);border-radius:8px;padding:10px;margin-bottom:10px;">
+        <div style="font-size:11px;font-weight:700;color:var(--g500);margin-bottom:6px;">3 MÉDICAMENTS PRESCRITS</div>
+        <div class="mi"><div class="mis">✅</div><div class="min"><div class="miname">Metformine 500mg</div><div class="midet">Stock suffisant · 39 cp dispo · couvre 19 jours</div></div><span class="tag tg">OK</span></div>
+        <div class="mi"><div class="mis">⚠️</div><div class="min"><div class="miname">Lisinopril 10mg</div><div class="midet">Stock insuffisant · 6 cp · traitement = 30 jours</div></div><span class="tag to">Manquant</span></div>
+        <div class="mi"><div class="mis">✅</div><div class="min"><div class="miname">Atorvastatine 20mg</div><div class="midet">Stock OK · expire avant fin de traitement</div></div><span class="tag to">Attention</span></div>
+      </div>
+      <button class="btn bp bsm" style="width:100%;" onclick="event.stopPropagation();go('patient-matching')">Voir le récapitulatif d'achat →</button>
+    </div>
+    <div class="card" style="cursor:pointer;" onclick="toast('Ordonnance Dr Bernard')">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;"><div><div style="font-size:15px;font-weight:700;">Dr. Alain Bernard</div><div style="font-size:12px;color:var(--g500);">Cardiologue · 3 mars 2026</div></div><span class="tag tg">Couverte</span></div>
+      <div class="mi" style="padding:8px 0 0;"><div class="mis">✅</div><div class="min"><div class="miname">Oméprazole 20mg</div><div class="midet">Stock OK · valide pendant toute la durée du traitement</div></div></div>
+      <div style="margin-top:8px;font-size:12px;color:var(--g400);">Renouvellement : 3 juin 2026</div>
+    </div>
+    <div class="card" style="opacity:.55;"><div style="display:flex;justify-content:space-between;"><div><div style="font-size:15px;font-weight:700;">Dr. Claire Moreau</div><div style="font-size:12px;color:var(--g500);">15 jan. 2026</div></div><span class="tag tgr">Archivée</span></div></div>
+    <button class="btn bp bfw blg" onclick="go('patient-add-ordonnance')">📸 Ajouter une ordonnance</button>
+  </div>
+  <div class="bnav">
+    <button class="tbb" onclick="go('patient-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</button>
+    <button class="tbb" onclick="go('patient-armoire')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Armoire</button>
+    <button class="tbb on" onclick="go('patient-ordonnances')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Ordonnances</button>
+    <button class="tbb" onclick="go('patient-profil')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil</button>
+  </div>
+</div>
+
+<!-- PATIENT — AJOUTER ORDONNANCE -->
+<div id="screen-patient-add-ordonnance" class="screen">
+  <div class="topbar"><div><button class="back" onclick="go('patient-ordonnances')">← Ordonnances</button></div></div>
+  <div class="page">
+    <div class="stitle" style="margin-bottom:6px;">📸 Nouvelle ordonnance</div>
+    <p style="font-size:13px;color:var(--g500);margin-bottom:16px;">Photographiez votre ordonnance — l'OCR extrait automatiquement les médicaments prescrits.</p>
+    <div class="scanzone" onclick="go('patient-ordo-posologie')"><div style="font-size:44px;margin-bottom:8px;">📄</div><div style="font-size:15px;font-weight:700;color:var(--g700);margin-bottom:4px;">Photographier l'ordonnance</div><p style="font-size:13px;color:var(--g500);">OCR automatique — posologies extraites</p><p style="font-size:12px;color:var(--g400);margin-top:4px;">→ Appuyer pour simuler</p></div>
+    <div style="text-align:center;color:var(--g400);font-size:13px;margin:0 0 16px;">— ou saisie manuelle —</div>
+    <div class="fg"><label class="fl">Médecin prescripteur</label><input class="fi" type="text" placeholder="Dr. Prénom Nom"></div>
+    <div class="fg"><label class="fl">Date de prescription</label><input class="fi" type="date" value="2026-05-27"></div>
+    <div class="fg"><label class="fl">Pharmacie de référence</label><select class="fi"><option>Pharmacie Durand — 12 rue de la Paix, Paris 1er</option><option>Pharmacie de la Gare — 5 pl. de la Gare</option></select></div>
+    <button class="btn bp bfw blg" onclick="go('patient-ordo-posologie')">🔍 Analyser & Extraire les posologies</button>
+  </div>
+</div>
+
+<!-- PATIENT — OCR POSOLOGIE -->
+<div id="screen-patient-ordo-posologie" class="screen">
+  <div class="topbar"><div><button class="back" onclick="go('patient-add-ordonnance')">← Retour</button></div></div>
+  <div class="page">
+    <div class="stitle" style="margin-bottom:2px;">📋 Posologies extraites par OCR</div>
+    <p style="font-size:13px;color:var(--g500);margin-bottom:14px;">Dr. Claire Moreau · 27 mai 2026 · Vérifiez et ajustez si nécessaire.</p>
+    <div class="alert ag"><div class="ai">✅</div><div class="ab2"><strong>3 médicaments détectés · Posologies extraites</strong>Taux de confiance OCR : 94% — Vérifiez les données ci-dessous</div></div>
+    <div class="posol-box"><div class="posol-drug">Metformine 500mg · Glucophage®</div><div class="posol-extracted">📖 OCR : "1 comprimé matin et soir pendant 14 jours"</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;"><div class="fg" style="margin-bottom:0;"><label class="fl">Fréquence / jour</label><select class="fi"><option>2 fois / jour</option><option>1 fois / jour</option><option>3 fois / jour</option></select></div><div class="fg" style="margin-bottom:0;"><label class="fl">Durée traitement</label><input class="fi" type="text" value="14 jours"></div></div><div style="font-size:12px;font-weight:600;color:var(--g600);margin-bottom:6px;">🔔 Rappels générés :</div><div class="posol-reminders"><div class="rem-chip">🌅 8h00 — Matin</div><div class="rem-chip">🌙 20h00 — Soir</div><button class="rem-chip" style="background:var(--g100);border-color:var(--g300);color:var(--g500);" onclick="toast('Modifier les horaires')">+ Modifier</button></div></div>
+    <div class="posol-box"><div class="posol-drug">Lisinopril 10mg · Zestril®</div><div class="posol-extracted">📖 OCR : "1 comprimé le matin, traitement continu"</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;"><div class="fg" style="margin-bottom:0;"><label class="fl">Fréquence / jour</label><select class="fi"><option>1 fois / jour</option><option>2 fois / jour</option></select></div><div class="fg" style="margin-bottom:0;"><label class="fl">Durée traitement</label><input class="fi" type="text" value="30 jours"></div></div><div style="font-size:12px;font-weight:600;color:var(--g600);margin-bottom:6px;">🔔 Rappels générés :</div><div class="posol-reminders"><div class="rem-chip">🌅 8h00 — Matin</div><button class="rem-chip" style="background:var(--g100);border-color:var(--g300);color:var(--g500);" onclick="toast('Modifier les horaires')">+ Modifier</button></div></div>
+    <div class="posol-box" style="border-color:var(--orange);background:var(--orange-l);"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;"><div class="posol-drug" style="margin-bottom:0;">Atorvastatine 20mg · Tahor®</div><span class="tag to" style="font-size:10px;">⚠️ À vérifier</span></div><div class="posol-extracted" style="color:var(--orange);">📖 OCR : "1 comprimé le soir" — durée non précisée</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;"><div class="fg" style="margin-bottom:0;"><label class="fl">Fréquence / jour</label><select class="fi"><option>1 fois / jour</option></select></div><div class="fg" style="margin-bottom:0;"><label class="fl">Durée traitement</label><input class="fi" type="text" placeholder="Ex : 30 jours" style="border-color:var(--orange);"></div></div><div class="posol-reminders"><div class="rem-chip">🌙 20h00 — Soir</div><button class="rem-chip" style="background:var(--g100);border-color:var(--g300);color:var(--g500);" onclick="toast('Modifier')">+ Modifier</button></div></div>
+    <button class="btn bg bfw blg" onclick="toast('✅ Rappels activés');go('patient-matching')">Confirmer les posologies & Activer les rappels</button>
+    <button class="btn bs bfw" style="margin-top:8px;" onclick="go('patient-matching')">Passer au matching →</button>
+  </div>
+</div>
+
+<!-- PATIENT — MATCHING -->
+<div id="screen-patient-matching" class="screen">
+  <div class="topbar"><div><button class="back" onclick="go('patient-ordonnances')">← Ordonnances</button></div></div>
+  <div class="page">
+    <div class="stitle" style="margin-bottom:2px;">🔍 Matching ordonnance × armoire</div>
+    <p style="font-size:13px;color:var(--g500);margin-bottom:14px;">Dr. Claire Moreau · 15 mai 2026 · 3 médicaments prescrits</p>
+    <div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div style="font-size:15px;font-weight:700;">Metformine 500mg</div><span class="tag tg">✅ Couvert</span></div><div class="mstep mstep-ok"><div class="mstep-num mstep-num-ok">1</div><div class="mstep-text"><div class="mstep-label">Présence dans l'armoire</div><div class="mstep-detail">✓ Produit trouvé — Glucophage® 500mg</div></div></div><div class="mstep mstep-ok"><div class="mstep-num mstep-num-ok">2</div><div class="mstep-text"><div class="mstep-label">Couverture quantitative</div><div class="mstep-detail">✓ 39 cp disponibles · traitement = 2 cp/j × 14j = 28 cp nécessaires</div></div></div><div class="mstep mstep-ok"><div class="mstep-num mstep-num-ok">3</div><div class="mstep-text"><div class="mstep-label">Validité temporelle</div><div class="mstep-detail">✓ Expire 08/2026 · fin de traitement 10/06 → valide jusqu'au bout</div></div></div></div>
+    <div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div style="font-size:15px;font-weight:700;">Lisinopril 10mg</div><span class="tag tr2">⚠️ À acheter</span></div><div class="mstep mstep-ok"><div class="mstep-num mstep-num-ok">1</div><div class="mstep-text"><div class="mstep-label">Présence dans l'armoire</div><div class="mstep-detail">✓ Produit trouvé — Zestril® 10mg</div></div></div><div class="mstep mstep-warn"><div class="mstep-num mstep-num-warn">2</div><div class="mstep-text"><div class="mstep-label">Couverture quantitative</div><div class="mstep-detail">⚠️ 6 cp disponibles · traitement = 30 cp → <strong>24 cp manquants</strong></div></div></div><div class="mstep mstep-warn"><div class="mstep-num mstep-num-warn">3</div><div class="mstep-text"><div class="mstep-label">Validité temporelle</div><div class="mstep-detail">⚠️ Expire 03/06/2026 · fin de traitement 27/06 → <strong>expire pendant le traitement</strong></div></div></div></div>
+    <div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div style="font-size:15px;font-weight:700;">Atorvastatine 20mg</div><span class="tag to">⚠️ Attention</span></div><div class="mstep mstep-ok"><div class="mstep-num mstep-num-ok">1</div><div class="mstep-text"><div class="mstep-label">Présence dans l'armoire</div><div class="mstep-detail">✓ Produit trouvé — Tahor® 20mg</div></div></div><div class="mstep mstep-ok"><div class="mstep-num mstep-num-ok">2</div><div class="mstep-text"><div class="mstep-label">Couverture quantitative</div><div class="mstep-detail">✓ 72 cp disponibles · traitement = 30 cp</div></div></div><div class="mstep mstep-warn"><div class="mstep-num mstep-num-warn">3</div><div class="mstep-text"><div class="mstep-label">Validité temporelle</div><div class="mstep-detail">⚠️ Expire 06/2026 · à surveiller en fin de traitement</div></div></div></div>
+    <div class="sh2" style="margin-top:4px;"><div class="stitle">🛒 Récapitulatif d'achat</div></div>
+    <div class="psum" style="border:1.5px solid var(--green);border-radius:12px;overflow:hidden;margin-bottom:10px;"><div class="psum-header psum-have">✅ Vous avez déjà</div><div class="psum-item"><span>Metformine 500mg (Glucophage®)</span><span style="color:var(--green);font-weight:700;">28 cp ✓</span></div><div class="psum-item"><span>Atorvastatine 20mg (Tahor®)</span><span style="color:var(--green);font-weight:700;">30 cp ✓</span></div></div>
+    <div class="psum" style="border:1.5px solid var(--red);border-radius:12px;overflow:hidden;margin-bottom:14px;"><div class="psum-header psum-buy">🛒 Vous devez acheter en pharmacie</div><div class="psum-item"><div><div style="font-weight:600;">Lisinopril 10mg (Zestril®)</div><div style="font-size:11px;color:var(--g500);">Stock insuffisant + expire pendant le traitement</div></div><span style="color:var(--red);font-weight:700;">1 boîte (30 cp)</span></div></div>
+    <div style="background:var(--green-l);border-radius:12px;padding:14px;margin-bottom:14px;border:1px solid #BBF7D0;"><div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:4px;">💰 Économie estimée</div><div style="font-size:13px;color:var(--g700);">2 médicaments sur 3 couverts par votre stock — économie estimée : <strong>~28 €</strong> évités à la pharmacie.</div></div>
+    <button class="btn bg bfw blg" onclick="toast('✅ Récapitulatif partagé avec la Pharmacie Durand')">Envoyer à ma pharmacie</button>
+    <button class="btn bs bfw" style="margin-top:8px;" onclick="toast('📄 Export PDF généré')">Exporter en PDF</button>
+    <button class="btn bs bfw" style="margin-top:8px;" onclick="go('patient-ordonnances')">Fermer</button>
+  </div>
+</div>
+
+<!-- PATIENT — OBSERVANCE -->
+<div id="screen-patient-observance" class="screen">
+  <div class="topbar"><div><button class="back" onclick="go('patient-home')">← Accueil</button></div><div class="tr"><span class="tag tg">87% cette semaine</span></div></div>
+  <div class="page">
+    <div class="sh2"><div class="stitle">📊 Mon observance</div></div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+        <div class="obs-ring"><svg viewBox="0 0 72 72" width="72" height="72"><circle cx="36" cy="36" r="30" fill="none" stroke="#E5E7EB" stroke-width="7"/><circle cx="36" cy="36" r="30" fill="none" stroke="#16A34A" stroke-width="7" stroke-dasharray="188.5" stroke-dashoffset="24.5" stroke-linecap="round"/></svg><div class="obs-pct">87%</div></div>
+        <div style="flex:1;"><div style="font-size:15px;font-weight:700;color:var(--g900);">Semaine du 20 au 26 mai</div><div style="font-size:13px;color:var(--g500);margin-top:2px;">20 prises sur 23 prévues · 3 manquées</div><div style="display:flex;gap:8px;margin-top:8px;"><span class="tag tg">↑ vs semaine -1</span><span class="tag tb">3 médicaments actifs</span></div></div>
+      </div>
+      <div class="wd-row"><div class="wd-pill"><div class="wd-lbl">Lun</div><div class="wd-dot wok">✓</div></div><div class="wd-pill"><div class="wd-lbl">Mar</div><div class="wd-dot wok">✓</div></div><div class="wd-pill"><div class="wd-lbl">Mer</div><div class="wd-dot wmiss">✗</div></div><div class="wd-pill"><div class="wd-lbl">Jeu</div><div class="wd-dot wpart">~</div></div><div class="wd-pill"><div class="wd-lbl">Ven</div><div class="wd-dot wok">✓</div></div><div class="wd-pill"><div class="wd-lbl">Sam</div><div class="wd-dot wok">✓</div></div><div class="wd-pill"><div class="wd-lbl">Dim</div><div class="wd-dot wtoday">•</div></div></div>
+    </div>
+    <div class="sh2"><div class="stitle">Aujourd'hui — 27 mai</div></div>
+    <div class="dose-card"><div class="dose-name">Metformine 500mg</div><div class="dose-posologie">📋 Posologie : 1 cp matin et soir</div><div class="dose-pills"><button class="dose-pill dp-done" onclick="toast('Prise 8h00 déjà confirmée')">✓ 8h00 — Prise</button><button class="dose-pill dp-todo" onclick="this.className='dose-pill dp-done';this.textContent='✓ 20h00 — Prise';toast('✅ Prise confirmée !')">20h00 — À prendre</button></div></div>
+    <div class="dose-card"><div class="dose-name">Lisinopril 10mg</div><div class="dose-posologie">📋 Posologie : 1 cp le matin</div><div class="dose-pills"><button class="dose-pill dp-done" onclick="toast('Prise 8h00 déjà confirmée')">✓ 8h00 — Prise</button></div></div>
+    <div class="dose-card"><div class="dose-name">Atorvastatine 20mg</div><div class="dose-posologie">📋 Posologie : 1 cp le soir</div><div class="dose-pills"><button class="dose-pill dp-todo" onclick="this.className='dose-pill dp-done';this.textContent='✓ 20h00 — Prise';toast('✅ Prise confirmée !')">20h00 — À prendre</button></div></div>
+    <div class="sh2" style="margin-top:4px;"><div class="stitle">Observance par médicament</div></div>
+    <div class="card"><div class="sl"><span class="slbl">Metformine 500mg</span><div style="display:flex;align-items:center;gap:8px;"><div style="width:80px;height:7px;background:var(--g200);border-radius:4px;overflow:hidden;"><div style="width:94%;height:100%;background:var(--green);border-radius:4px;"></div></div><span class="sval" style="color:var(--green);">94%</span></div></div><div class="sl"><span class="slbl">Lisinopril 10mg</span><div style="display:flex;align-items:center;gap:8px;"><div style="width:80px;height:7px;background:var(--g200);border-radius:4px;overflow:hidden;"><div style="width:78%;height:100%;background:var(--orange);border-radius:4px;"></div></div><span class="sval" style="color:var(--orange);">78%</span></div></div><div class="sl"><span class="slbl">Atorvastatine 20mg</span><div style="display:flex;align-items:center;gap:8px;"><div style="width:80px;height:7px;background:var(--g200);border-radius:4px;overflow:hidden;"><div style="width:91%;height:100%;background:var(--green);border-radius:4px;"></div></div><span class="sval" style="color:var(--green);">91%</span></div></div></div>
+    <div class="alert ab"><div class="ai">💡</div><div class="ab2"><strong>Votre pharmacien peut consulter votre observance</strong>Si vous avez partagé votre armoire, Dr. Durand peut voir votre suivi et vous envoyer des conseils.</div></div>
+  </div>
+  <div class="bnav">
+    <button class="tbb" onclick="go('patient-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</button>
+    <button class="tbb" onclick="go('patient-armoire')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Armoire</button>
+    <button class="tbb" onclick="go('patient-ordonnances')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Ordonnances</button>
+    <button class="tbb" onclick="go('patient-profil')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil</button>
+  </div>
+</div>
+
+<!-- PATIENT — PARTAGE PRO -->
+<div id="screen-patient-partage" class="screen">
+  <div class="topbar"><div><button class="back" onclick="go('patient-home')">← Accueil</button></div></div>
+  <div class="page">
+    <div class="stitle" style="margin-bottom:6px;">🔗 Partager avec un professionnel</div>
+    <p style="font-size:13px;color:var(--g500);margin-bottom:16px;">Générez un code d'accès temporaire (valable 48h) à partager avec votre pharmacien ou médecin.</p>
+    <div class="card" style="text-align:center;padding:28px;"><div style="font-size:12px;font-weight:700;color:var(--g500);letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px;">Votre code d'accès</div><div style="font-size:42px;font-weight:900;color:var(--blue);letter-spacing:8px;font-family:monospace;">M9X-42K</div><div style="font-size:13px;color:var(--g400);margin-top:8px;">⏰ Expire dans 47h 23min</div><button class="btn bp" style="margin-top:16px;" onclick="toast('Code copié !')">📋 Copier le code</button></div>
+    <div class="card"><div class="ctitle">Accès actifs</div><div class="li" onclick="toast('Révoquer accès Dr. Durand')"><div class="lic icg">🏥</div><div class="lin"><div class="liname">Dr. Pierre Durand</div><div class="lisub">Pharmacie Durand · Accès lecture seule · Expire 28/05 à 14h32</div></div><button class="btn bsm" style="background:var(--red-l);color:var(--red);border:none;cursor:pointer;" onclick="event.stopPropagation();toast('Accès révoqué')">Révoquer</button></div></div>
+    <div class="alert ab"><div class="ai">ℹ️</div><div class="ab2"><strong>Accès en lecture seule</strong>Le professionnel peut consulter votre armoire et ordonnances, ajouter des annotations et vous envoyer des messages. Il ne peut pas modifier vos données.</div></div>
+  </div>
+</div>
+
+<!-- AIDANT — MULTI-ARMOIRES -->
+<div id="screen-aidant-home" class="screen">
+  <div class="topbar"><div style="display:flex;align-items:center;gap:10px;"><div class="logo" onclick="go('login')" style="cursor:pointer;" title="Accueil prototype">Med<span>ly</span></div><span class="tag tt prof-tag">Aidant</span></div><div class="tr"><div class="av av-a">JM</div></div></div>
+  <div class="page">
+    <div class="greet">Bonjour, <span>Jean</span> 👋</div>
+    <div class="greetsub">Vous gérez 3 armoires · Mardi 27 mai 2026</div>
+    <div class="sh2"><div class="stitle">Armoires gérées</div><button class="sact" onclick="toast('Ajouter un profil')">+ Ajouter</button></div>
+    <div class="arm-card" onclick="go('patient-home')" style="background:linear-gradient(135deg,#2563EB,#1D4ED8);"><div style="font-size:11px;font-weight:700;opacity:.7;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Mon armoire</div><div class="arm-card-name">Jean Martin</div><div class="arm-card-sub">Moi-même · 6 produits</div><div class="arm-card-stats"><div class="arm-stat"><strong>6</strong>produits</div><div class="arm-stat"><strong>0</strong>alerte</div><div class="arm-stat"><strong>100%</strong>valides</div></div></div>
+    <div class="arm-card" onclick="go('patient-home')" style="background:linear-gradient(135deg,#7C3AED,#6D28D9);"><div style="font-size:11px;font-weight:700;opacity:.7;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Armoire partagée</div><div class="arm-card-name">Jacqueline Martin</div><div class="arm-card-sub">Maman · Accès lecture/écriture · 15 produits</div><div class="arm-card-stats"><div class="arm-stat"><strong>15</strong>produits</div><div class="arm-stat"><strong style="color:#FCA5A5;">3</strong>alertes</div><div class="arm-stat"><strong>2</strong>ordonnances</div></div></div>
+    <div class="arm-card" onclick="go('patient-home')" style="background:linear-gradient(135deg,#0891B2,#0E7490);"><div style="font-size:11px;font-weight:700;opacity:.7;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Armoire partagée</div><div class="arm-card-name">Lucas Martin</div><div class="arm-card-sub">Mon fils · Accès lecture seule · 4 produits</div><div class="arm-card-stats"><div class="arm-stat"><strong>4</strong>produits</div><div class="arm-stat"><strong>0</strong>alerte</div><div class="arm-stat"><strong>1</strong>ordonnance</div></div></div>
+    <div class="alert ag"><div class="ai">💡</div><div class="ab2"><strong>Multi-armoires</strong>Invitez un proche par e-mail pour partager l'accès à son armoire. Définissez les droits : lecture seule ou lecture/écriture.</div></div>
+    <button class="btn bp bfw" onclick="toast('Invitation envoyée par e-mail')">+ Inviter un proche par e-mail</button>
+  </div>
+  <div class="bnav">
+    <button class="tbb on" onclick="go('aidant-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</button>
+    <button class="tbb" onclick="toast('Notifications aidant')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>Alertes</button>
+    <button class="tbb" onclick="toast('Paramètres')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil</button>
+  </div>
+</div>
+
+<!-- PHARMACIEN — ESPACE PRO -->
+<div id="screen-pharma-home" class="screen">
+  <div class="topbar"><div style="display:flex;align-items:center;gap:10px;"><div class="logo" onclick="go('login')" style="cursor:pointer;" title="Accueil prototype">Med<span>ly</span></div><span class="tag tg prof-tag">Pharmacien</span></div><div class="tr"><div class="notif" onclick="toast('Messages patients')"><span>💬</span><div class="ndot"></div></div><div class="av av-ph">PD</div></div></div>
+  <div class="page">
+    <div class="greet">Espace <span>professionnel</span> 🏥</div>
+    <div class="greetsub">Dr. Pierre Durand · Pharmacie Durand · 3 armoires partagées</div>
+    <div class="alert ab"><div class="ai">ℹ️</div><div class="ab2"><strong>Accès en lecture seule</strong>Vous consultez les armoires que vos patients ont partagées avec vous. Vos annotations et messages sont non contraignants. Voir les CGU.</div></div>
+    <div class="sh2"><div class="stitle">Armoires partagées (3)</div></div>
+    <div class="card">
+      <div class="li" onclick="go('pharma-patient-armoire')"><div class="lic icr">⚠️</div><div class="lin"><div class="liname">Sophie Martin</div><div class="lisub">12 produits · 2 alertes · Partagé depuis 15/04/2026</div><div style="display:flex;gap:6px;margin-top:4px;"><span class="ansm">🚨 Rappel lot Doliprane</span><span class="tag tr2">Stock critique Lisinopril</span></div></div></div>
+      <div class="li" onclick="go('pharma-patient-armoire')"><div class="lic icg">✅</div><div class="lin"><div class="liname">René Dubois</div><div class="lisub">8 produits · 0 alerte · Partagé depuis 02/05/2026</div><span class="tag tg" style="margin-top:4px;">Armoire à jour</span></div></div>
+      <div class="li" onclick="go('pharma-patient-armoire')"><div class="lic ico">📅</div><div class="lin"><div class="liname">Marie Leroy</div><div class="lisub">6 produits · 1 alerte · Partagé depuis 10/03/2026</div><span class="tag to" style="margin-top:4px;">Péremption J-30</span></div></div>
+    </div>
+    <div class="sh2"><div class="stitle">Messages récents</div></div>
+    <div class="card" style="cursor:pointer;" onclick="toast('Messagerie — Répondre à Sophie Martin')"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><div style="font-size:14px;font-weight:700;">Sophie Martin</div><span style="font-size:11px;color:var(--g400);">Il y a 2h</span></div><div style="font-size:13px;color:var(--g600);">"Bonjour Dr. Durand, le Doliprane est bien concerné par le rappel ?"</div><div style="margin-top:8px;display:flex;justify-content:flex-end;"><button class="btn bp bsm" onclick="event.stopPropagation();toast('Réponse envoyée à Sophie Martin')">Répondre</button></div></div>
+  </div>
+  <div class="bnav">
+    <button class="tbb on" onclick="go('pharma-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Patients</button>
+    <button class="tbb" onclick="toast('Messagerie sécurisée')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Messages</button>
+    <button class="tbb" onclick="toast('Paramètres espace pro')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>Paramètres</button>
+  </div>
+</div>
+
+<!-- PHARMACIEN — ARMOIRE PATIENT -->
+<div id="screen-pharma-patient-armoire" class="screen">
+  <div class="topbar"><div><button class="back" onclick="go('pharma-home')">← Patients</button></div><div class="tr"><button class="btn bp bsm" onclick="toast('Message envoyé à Sophie Martin')">Envoyer un message</button></div></div>
+  <div class="page">
+    <div class="card"><div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;"><div style="width:52px;height:52px;background:var(--blue-l);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">👤</div><div style="flex:1;"><div style="font-size:18px;font-weight:800;">Sophie Martin</div><div style="font-size:12px;color:var(--g500);">Partagé le 15/04/2026 · Accès lecture seule · Code M9X-42K</div></div></div><div style="padding:10px;background:var(--orange-l);border-radius:8px;border:1px solid #FDE68A;font-size:12px;color:var(--g700);">⚠️ <strong>Rappel :</strong> Vos annotations sont des conseils non contraignants. <a href="#" style="color:var(--blue);" onclick="toast('CGU affichées')">CGU →</a></div></div>
+    <div class="alert at"><div class="ai">🚨</div><div class="ab2"><strong>Rappel lot ANSM — Doliprane 1000mg</strong>Lot FR-24-08821 concerné. Informez la patiente.</div></div>
+    <div class="alert ar"><div class="ai">⏰</div><div class="ab2"><strong>Lisinopril 10mg — Péremption J-7</strong>6 comprimés restants · expire 03/06/2026 · stock insuffisant</div></div>
+    <div class="sh2"><div class="stitle">Armoire (lecture seule)</div><span class="tag tgr">12 produits</span></div>
+    <div class="card"><div class="li"><div class="lic icr">💊</div><div class="lin"><div class="liname">Doliprane 1000mg</div><div class="lisub">OTC · 8 cp · <span style="color:var(--red);font-weight:600;">Rappel lot ANSM actif</span></div></div><span class="tag tr2">Rappel</span></div><div class="li"><div class="lic icr">💊</div><div class="lin"><div class="liname">Lisinopril 10mg</div><div class="lisub">Zestril® · 6 cp · expire 03/06/2026</div></div><span class="tag tr2">J-7</span></div><div class="li"><div class="lic icb">💊</div><div class="lin"><div class="liname">Metformine 500mg</div><div class="lisub">Glucophage® · 39 cp · expire 08/2026</div></div><span class="tag tg">Valide</span></div><div class="li"><div class="lic icb">💊</div><div class="lin"><div class="liname">Atorvastatine 20mg</div><div class="lisub">Tahor® · 72 cp · expire 06/2026</div></div><span class="tag to">Attention</span></div><div class="li" onclick="toast('Voir tous les produits')"><div style="color:var(--blue);font-size:13px;font-weight:600;width:100%;text-align:center;">+ 8 autres produits →</div></div></div>
+    <div class="sh2"><div class="stitle">Annotation pharmacien</div></div>
+    <div class="annot"><div class="annot-who">Dr. Durand · 20 mai 2026</div><div class="annot-text">RAS pour Metformine. Pensez à renouveler l'ordonnance de Lisinopril dans 3 semaines.</div></div>
+    <div class="fg" style="margin-top:8px;"><label class="fl">Ajouter une annotation</label><textarea class="fi" style="height:70px;resize:none;" placeholder="Conseil officinal non contraignant…"></textarea></div>
+    <button class="btn bp bfw" onclick="toast('✅ Annotation enregistrée — visible par Sophie Martin')">Enregistrer l'annotation</button>
+  </div>
+</div>
+
+<!-- MUTUELLE — ANALYTICS -->
+<div id="screen-mutuelle-home" class="screen">
+  <div class="topbar"><div style="display:flex;align-items:center;gap:10px;"><div class="logo" onclick="go('login')" style="cursor:pointer;" title="Accueil prototype">Med<span>ly</span></div><span class="tag tp prof-tag">Organisme payeur</span></div><div class="tr"><div class="av av-m">MG</div></div></div>
+  <div class="page">
+    <div class="greet">MGEN — <span>Innovation</span></div>
+    <div class="greetsub">Données agrégées anonymisées · Avril 2026 · National</div>
+    <div class="kgrid"><div class="kpi"><div class="kv" style="color:var(--blue);">2 847</div><div class="kl">Adhérents actifs</div><div class="ks up">↑ +18% vs M-3</div></div><div class="kpi"><div class="kv" style="color:var(--green);">3 214</div><div class="kl">Achats redondants évités</div><div class="ks up">↑ +340 ce mois</div></div><div class="kpi"><div class="kv" style="color:var(--orange);">89%</div><div class="kl">Taux reconnaissance BDPM</div><div class="ks up">↑ +2pts vs M-1</div></div><div class="kpi"><div class="kv" style="color:var(--green);">847k€</div><div class="kl">Économies estimées</div><div class="ks up">↑ Annualisé</div></div></div>
+    <div class="card"><div class="sh2"><div class="stitle">📈 Économies mensuelles estimées</div><span class="tag tg">+43%</span></div><div class="cwrap"><svg viewBox="0 0 340 130" xmlns="http://www.w3.org/2000/svg"><line x1="40" y1="10" x2="40" y2="100" stroke="#E5E7EB" stroke-width="1"/><line x1="40" y1="100" x2="330" y2="100" stroke="#E5E7EB" stroke-width="1"/><text x="35" y="103" text-anchor="end" font-size="9" fill="#9CA3AF">0</text><text x="35" y="70" text-anchor="end" font-size="9" fill="#9CA3AF">100k</text><text x="35" y="37" text-anchor="end" font-size="9" fill="#9CA3AF">200k</text><text x="90" y="115" text-anchor="middle" font-size="9" fill="#9CA3AF">Jan</text><text x="147" y="115" text-anchor="middle" font-size="9" fill="#9CA3AF">Fév</text><text x="204" y="115" text-anchor="middle" font-size="9" fill="#9CA3AF">Mar</text><text x="261" y="115" text-anchor="middle" font-size="9" fill="#9CA3AF">Avr</text><text x="318" y="115" text-anchor="middle" font-size="9" fill="#9CA3AF">Mai*</text><defs><linearGradient id="gg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#16A34A" stop-opacity="0.2"/><stop offset="100%" stop-color="#16A34A" stop-opacity="0.02"/></linearGradient></defs><path d="M90,81 C110,81 127,72 147,72 C167,72 184,60 204,60 C224,60 241,46 261,46 C281,46 298,28 318,28 L318,100 L90,100 Z" fill="url(#gg)"/><polyline points="90,81 147,72 204,60 261,46 318,28" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="90" cy="81" r="4" fill="#16A34A"/><circle cx="147" cy="72" r="4" fill="#16A34A"/><circle cx="204" cy="60" r="4" fill="#16A34A"/><circle cx="261" cy="46" r="4" fill="#16A34A"/><circle cx="318" cy="28" r="5" fill="#16A34A" stroke="#fff" stroke-width="2"/><text x="90" y="76" text-anchor="middle" font-size="9" fill="#16A34A">128k</text><text x="147" y="67" text-anchor="middle" font-size="9" fill="#16A34A">156k</text><text x="204" y="55" text-anchor="middle" font-size="9" fill="#16A34A">192k</text><text x="261" y="41" text-anchor="middle" font-size="9" fill="#16A34A">234k</text><text x="318" y="23" text-anchor="middle" font-size="9" font-weight="700" fill="#16A34A">267k*</text></svg></div></div>
+    <div class="card"><div class="ctitle">Métriques d'impact</div><div class="sl"><span class="slbl">Ordonnances matchées avec armoire</span><span class="sval" style="color:var(--blue);">5 421</span></div><div class="sl"><span class="slbl">Médicaments "déjà en stock" détectés</span><span class="sval" style="color:var(--green);">8 103</span></div><div class="sl"><span class="slbl">Rappels lots ANSM détectés en armoire</span><span class="sval" style="color:var(--red);">47</span></div><div class="sl"><span class="slbl">Alertes péremption actionnées</span><span class="sval" style="color:var(--orange);">1 892</span></div><div class="sl"><span class="slbl">Valeur médicaments périmés évités</span><span class="sval" style="color:var(--green);">~34 000 €</span></div></div>
+    <div class="card"><div class="ctitle">Rétention utilisateurs</div><div class="opr"><span class="opl">Rétention J+7</span><div class="opb"><div class="opf" style="width:78%;background:var(--green);"></div></div><span class="opv" style="color:var(--green);">78%</span></div><div class="opr"><span class="opl">Rétention J+30</span><div class="opb"><div class="opf" style="width:62%;background:var(--blue);"></div></div><span class="opv" style="color:var(--blue);">62%</span></div><div class="opr"><span class="opl">Rétention J+90</span><div class="opb"><div class="opf" style="width:44%;background:var(--orange);"></div></div><span class="opv" style="color:var(--orange);">44%</span></div></div>
+    <div class="card" style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:1px solid #BBF7D0;"><div class="ctitle">ROI pour MGEN</div><div class="sl"><span class="slbl">Coût abonnement Medly (PMPY)</span><span class="sval">1,00 €</span></div><div class="sl"><span class="slbl">Économie estimée par adhérent actif</span><span class="sval" style="color:var(--green);">~12,40 €</span></div><div class="div"></div><div class="sl"><span class="slbl" style="font-weight:700;">ROI estimé</span><span class="sval" style="color:var(--green);font-size:20px;">× 12,4</span></div></div>
+    <div style="display:flex;gap:8px;"><button class="btn bp" style="flex:1;" onclick="toast('📥 Rapport PDF exporté')">📥 Rapport PDF</button><button class="btn bs" style="flex:1;" onclick="toast('📊 Export données anonymisées')">📊 Export données</button></div>
+  </div>
+  <div class="bnav">
+    <button class="tbb on" onclick="go('mutuelle-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</button>
+    <button class="tbb" onclick="toast('Rapports détaillés')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Rapports</button>
+    <button class="tbb" onclick="toast('Paramètres compte MGEN')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>Paramètres</button>
+  </div>
+</div>
+
+<!-- PATIENT — PROFIL -->
+<div id="screen-patient-profil" class="screen">
+  <div class="topbar">
+    <div><button class="back" onclick="go('patient-home')">← Accueil</button></div>
+    <div class="tr"><button class="btn bp bsm" id="pf-save-btn" onclick="pfSave()">Enregistrer</button></div>
+  </div>
+
+  <div class="pf-hero">
+    <div class="pf-avatar-wrap">
+      <div class="pf-avatar">👤</div>
+      <div class="pf-avatar-edit" onclick="toast('Changer la photo')">✏️</div>
+    </div>
+    <div class="pf-name">Sophie Martin</div>
+    <div class="pf-sub">Née le 14/03/1982 · 44 ans</div>
+    <div class="pf-badges">
+      <div class="pf-badge">💊 6 médicaments actifs</div>
+      <div class="pf-badge ald">⚡ ALD n°8</div>
+      <div class="pf-badge">🏥 Pharmacie Centrale</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <!-- Complétion -->
+    <div class="card" style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span style="font-size:13px;font-weight:600;color:var(--g800);">Complétude du profil</span>
+        <span style="font-size:13px;font-weight:700;color:var(--blue);">72%</span>
+      </div>
+      <div class="pf-prog-track"><div class="pf-prog-fill" style="width:72%;"></div></div>
+      <div style="font-size:11px;color:var(--g500);margin-top:5px;">Complétez votre mutuelle et vos contacts de confiance pour atteindre 100%</div>
+    </div>
+
+    <!-- 1. Identité & contact -->
+    <div class="pf-section" id="pfs-identity">
+      <div class="pf-sec-header" onclick="pfToggle('pfs-identity')">
+        <div class="pf-sec-icon" style="background:var(--blue-l);">👤</div>
+        <div class="pf-sec-title">Identité & contact</div>
+        <span class="pf-sec-chevron">▾</span>
+      </div>
+      <div class="pf-sec-body">
+        <div class="pf-row2">
+          <div class="fg"><label class="fl">Prénom</label><input class="fi" type="text" value="Sophie"></div>
+          <div class="fg"><label class="fl">Nom</label><input class="fi" type="text" value="Martin"></div>
+        </div>
+        <div class="fg"><label class="fl">Date de naissance</label><input class="fi" type="date" value="1982-03-14"></div>
+        <div class="fg">
+          <label class="fl">Sexe</label>
+          <div class="pf-radio-group">
+            <div class="pf-rc"><input type="radio" name="sexe" id="sf" checked><label for="sf">♀ Femme</label></div>
+            <div class="pf-rc"><input type="radio" name="sexe" id="sm"><label for="sm">♂ Homme</label></div>
+            <div class="pf-rc"><input type="radio" name="sexe" id="sa"><label for="sa">Autre</label></div>
+          </div>
+        </div>
+        <div class="fg"><label class="fl">Téléphone</label><input class="fi" type="tel" value="+33 6 12 34 56 78"></div>
+        <div class="fg"><label class="fl">Email</label><input class="fi" type="email" value="sophie.martin@email.fr"></div>
+      </div>
+    </div>
+
+    <!-- 2. Informations de santé -->
+    <div class="pf-section" id="pfs-health">
+      <div class="pf-sec-header" onclick="pfToggle('pfs-health')">
+        <div class="pf-sec-icon" style="background:var(--red-l);">🩺</div>
+        <div class="pf-sec-title">Informations de santé</div>
+        <span class="pf-sec-chevron">▾</span>
+      </div>
+      <div class="pf-sec-body">
+        <div class="fg">
+          <label class="fl">Pathologies chroniques</label>
+          <div class="pf-tags" id="pf-patho">
+            <span class="pf-tag">Diabète type 2 <span class="pf-tag-rm" onclick="pfRemoveTag(this)">×</span></span>
+            <span class="pf-tag">Hypertension <span class="pf-tag-rm" onclick="pfRemoveTag(this)">×</span></span>
+            <span class="pf-tag-add" onclick="pfAddTag('pf-patho','Pathologie',false)">+ Ajouter</span>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl">Allergies & intolérances médicamenteuses</label>
+          <div class="pf-tags" id="pf-allergies">
+            <span class="pf-tag danger">Pénicilline <span class="pf-tag-rm" onclick="pfRemoveTag(this)">×</span></span>
+            <span class="pf-tag-add" onclick="pfAddTag('pf-allergies','Allergie',true)">+ Ajouter</span>
+          </div>
+        </div>
+        <div class="alert ao"><div class="ai">⚠️</div><div class="ab2">Les allergies sont partagées avec votre pharmacie lors de chaque dispensation.</div></div>
+        <div class="pf-row2">
+          <div class="fg"><label class="fl">Poids (kg)</label><input class="fi" type="number" value="68"></div>
+          <div class="fg"><label class="fl">Taille (cm)</label><input class="fi" type="number" value="165"></div>
+        </div>
+        <div class="fg">
+          <label class="fl">Grossesse / allaitement</label>
+          <div class="pf-radio-group">
+            <div class="pf-rc"><input type="radio" name="grossesse" id="gn" checked><label for="gn">Non concernée</label></div>
+            <div class="pf-rc"><input type="radio" name="grossesse" id="ge"><label for="ge">Enceinte</label></div>
+            <div class="pf-rc"><input type="radio" name="grossesse" id="ga"><label for="ga">Allaitante</label></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Couverture & remboursement -->
+    <div class="pf-section" id="pfs-cover">
+      <div class="pf-sec-header" onclick="pfToggle('pfs-cover')">
+        <div class="pf-sec-icon" style="background:#FFFBEB;">💳</div>
+        <div class="pf-sec-title">Couverture & remboursement</div>
+        <span class="pf-sec-chevron">▾</span>
+      </div>
+      <div class="pf-sec-body">
+        <div class="fg">
+          <label class="fl">N° de sécurité sociale</label>
+          <div class="pf-sensitive">
+            <input class="fi" id="pf-nss" type="text" value="2 82 03 75 123 456 78" style="letter-spacing:2px;">
+            <span class="pf-eye" onclick="pfToggleNSS()">👁</span>
+          </div>
+        </div>
+        <div class="alert ab"><div class="ai">🔒</div><div class="ab2">Ce numéro est chiffré — utilisé uniquement pour les ordonnances électroniques.</div></div>
+        <div class="pf-toggle-row">
+          <div class="pf-ti"><div class="pf-tl">ALD reconnue</div><div class="pf-td">Remboursement à 100% sur les soins en lien avec l'ALD</div></div>
+          <label class="pf-toggle"><input type="checkbox" checked onchange="pfToggleALD(this)"><div class="pf-tslider"></div></label>
+        </div>
+        <div id="pf-ald-detail">
+          <div class="fg"><label class="fl">Nature de l'ALD</label>
+            <select class="fi"><option selected>ALD n°8 — Diabète de type 1 et 2</option><option>ALD n°12 — Hypertension artérielle sévère</option><option>ALD n°30 — Cancer</option><option>Autre ALD</option></select>
+          </div>
+        </div>
+        <div style="height:1px;background:var(--g200);margin:4px 0;"></div>
+        <div class="fg"><label class="fl">Mutuelle / complémentaire</label>
+          <select class="fi" id="pf-mutuelle-select" onchange="pfMutuelleChange(this)">
+<option value="">— Sélectionner —</option>
+<optgroup label="Mutuelles (Code de la Mutualité)">
+<option>AÉSIO Mutuelle</option>
+<option>Apivia Macif Mutuelle</option>
+<option>Apicil Mutuelle</option>
+<option>CCMO Mutuelle</option>
+<option>France Mutuelle</option>
+<option>Garance</option>
+<option selected>Harmonie Mutuelle</option>
+<option>Identités Mutuelle</option>
+<option>Interiale Mutuelle</option>
+<option>Klesia Mut'</option>
+<option>La France Mutualiste</option>
+<option>La Mutuelle des Étudiants (LMDE)</option>
+<option>La Mutuelle Générale</option>
+<option>La Mutuelle Verte</option>
+<option>Malakoff Humanis Mutuelle</option>
+<option>Matmut Mutualité</option>
+<option>MGEFI</option>
+<option>MGEN</option>
+<option>MNH – Mutuelle Nationale des Hospitaliers</option>
+<option>MNT – Mutuelle Nationale Territoriale</option>
+<option>Mutuelle Bleue</option>
+<option>Mutuelle Chorum</option>
+<option>Mutuelle des Services Publics</option>
+<option>Mutuelle Familiale</option>
+<option>Mutuelle MAE</option>
+<option>Mutuelle UNEO (Défense)</option>
+<option>Mutuelle Viasante</option>
+<option>Ociane Matmut</option>
+<option>Radiance Mutuelle</option>
+<option>Solimut Mutuelle de France</option>
+<option>Territoria Mutuelle</option>
+</optgroup>
+<optgroup label="Assureurs santé (Code des Assurances)">
+<option>AG2R La Mondiale</option>
+<option>Allianz Santé</option>
+<option>April Santé</option>
+<option>AXA Santé</option>
+<option>Generali Santé</option>
+<option>Groupama Santé</option>
+<option>SwissLife Santé</option>
+</optgroup>
+<option value="autre">Autre (préciser)</option>
+</select>
+          <input class="fi" id="pf-mutuelle-autre" type="text" placeholder="Précisez votre mutuelle…" style="display:none;margin-top:8px;">
+        </div>
+        <div class="fg"><label class="fl">N° adhérent mutuelle</label><input class="fi" type="text" value="HM-2024-789654"></div>
+        <div class="fg">
+          <label class="fl">Taux de remboursement habituel</label>
+          <div class="pf-radio-group">
+            <div class="pf-rc"><input type="radio" name="taux" id="t65"><label for="t65">65%</label></div>
+            <div class="pf-rc"><input type="radio" name="taux" id="t80" checked><label for="t80">80%</label></div>
+            <div class="pf-rc"><input type="radio" name="taux" id="t100"><label for="t100">100% (ALD)</label></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Pharmacie de référence -->
+    <div class="pf-section" id="pfs-pharma">
+      <div class="pf-sec-header" onclick="pfToggle('pfs-pharma')">
+        <div class="pf-sec-icon" style="background:var(--green-l);">🏥</div>
+        <div class="pf-sec-title">Pharmacie de référence</div>
+        <span class="pf-sec-chevron">▾</span>
+      </div>
+      <div class="pf-sec-body">
+        <div class="pf-pharma-card">
+          <div class="pf-pharma-logo">⚕️</div>
+          <div style="flex:1;"><div style="font-size:14px;font-weight:700;">Pharmacie Centrale</div><div style="font-size:12px;color:var(--g500);margin-top:2px;">12 rue de la Paix, 75001 Paris</div><div style="font-size:12px;color:var(--blue);font-weight:600;margin-top:2px;">Dr. Claire Dupont, titulaire</div></div>
+          <span style="font-size:13px;color:var(--blue);font-weight:600;cursor:pointer;text-decoration:underline;" onclick="toast('Recherche de pharmacie')">Changer</span>
+        </div>
+        <div class="fg">
+          <label class="fl">Préférences de retrait</label>
+          <div class="pf-radio-group">
+            <div class="pf-rc"><input type="radio" name="retrait" id="rc" checked><label for="rc">🏪 Comptoir</label></div>
+            <div class="pf-rc"><input type="radio" name="retrait" id="rd"><label for="rd">🚗 Drive</label></div>
+            <div class="pf-rc"><input type="radio" name="retrait" id="rl"><label for="rl">🚚 Livraison</label></div>
+          </div>
+        </div>
+        <div class="fg"><label class="fl">Délai avant retrait</label>
+          <select class="fi"><option>Dès que prêt</option><option selected>2 heures</option><option>Le lendemain</option><option>Dans la semaine</option></select>
+        </div>
+        <div class="alert ag"><div class="ai">📋</div><div class="ab2">Votre pharmacie reçoit automatiquement vos ordonnances électroniques et peut préparer votre commande à l'avance.</div></div>
+      </div>
+    </div>
+
+    <!-- 5. Préférences & notifications -->
+    <div class="pf-section" id="pfs-pref">
+      <div class="pf-sec-header" onclick="pfToggle('pfs-pref')">
+        <div class="pf-sec-icon" style="background:#EEF0FF;">🔔</div>
+        <div class="pf-sec-title">Préférences & notifications</div>
+        <span class="pf-sec-chevron">▾</span>
+      </div>
+      <div class="pf-sec-body">
+        <div class="fg"><label class="fl">Langue</label>
+          <select class="fi"><option selected>🇫🇷 Français</option><option>🇬🇧 English</option><option>🇩🇿 Arabe</option><option>🇵🇹 Portugais</option></select>
+        </div>
+        <div style="height:1px;background:var(--g200);"></div>
+        <div class="pf-toggle-row"><div class="pf-ti"><div class="pf-tl">Rappels de renouvellement</div><div class="pf-td">Notification avant épuisement du stock estimé</div></div><label class="pf-toggle"><input type="checkbox" checked><div class="pf-tslider"></div></label></div>
+        <div class="fg"><label class="fl">Délai d'alerte renouvellement</label>
+          <select class="fi"><option>3 jours avant</option><option selected>7 jours avant</option><option>14 jours avant</option><option>1 mois avant</option></select>
+        </div>
+        <div style="height:1px;background:var(--g200);"></div>
+        <div class="pf-toggle-row"><div class="pf-ti"><div class="pf-tl">Alertes interactions médicamenteuses</div><div class="pf-td">Signalement automatique si interaction détectée</div></div><label class="pf-toggle"><input type="checkbox" checked><div class="pf-tslider"></div></label></div>
+        <div class="pf-toggle-row"><div class="pf-ti"><div class="pf-tl">Rappels de prise</div><div class="pf-td">Notifications aux heures de vos traitements</div></div><label class="pf-toggle"><input type="checkbox" checked><div class="pf-tslider"></div></label></div>
+        <div class="pf-toggle-row"><div class="pf-ti"><div class="pf-tl">Messages de la pharmacie</div><div class="pf-td">Commande prête, conseils officinaux</div></div><label class="pf-toggle"><input type="checkbox" checked><div class="pf-tslider"></div></label></div>
+        <div style="height:1px;background:var(--g200);"></div>
+        <div class="fg">
+          <label class="fl">Canal de notification préféré</label>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:2px;">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;color:var(--g800);"><input type="checkbox" checked style="accent-color:var(--blue);width:18px;height:18px;"> 📱 Notifications push (app)</label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;color:var(--g800);"><input type="checkbox" checked style="accent-color:var(--blue);width:18px;height:18px;"> 📩 SMS</label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;color:var(--g800);"><input type="checkbox" style="accent-color:var(--blue);width:18px;height:18px;"> ✉️ Email</label>
+          </div>
+        </div>
+        <div style="height:1px;background:var(--g200);"></div>
+        <div class="pf-toggle-row"><div class="pf-ti"><div class="pf-tl">Partage de données avec la pharmacie</div><div class="pf-td">Historique partagé avec votre officine de référence</div></div><label class="pf-toggle"><input type="checkbox" checked><div class="pf-tslider"></div></label></div>
+        <div class="alert ab"><div class="ai">🛡️</div><div class="ab2">Vos données sont traitées conformément au RGPD. Elles ne sont jamais vendues à des tiers. <span style="text-decoration:underline;cursor:pointer;color:var(--blue);" onclick="toast('Politique de confidentialité')">Voir la politique →</span></div></div>
+      </div>
+    </div>
+
+    <!-- 6. Sécurité & accès -->
+    <div class="pf-section" id="pfs-security">
+      <div class="pf-sec-header" onclick="pfToggle('pfs-security')">
+        <div class="pf-sec-icon" style="background:var(--g100);">🔐</div>
+        <div class="pf-sec-title">Sécurité & accès</div>
+        <span class="pf-sec-chevron">▾</span>
+      </div>
+      <div class="pf-sec-body">
+        <div class="fg">
+          <label class="fl">Méthode d'authentification</label>
+          <div class="pf-auth-opt active" onclick="pfSelectAuth(this)">
+            <div class="pf-auth-icon">🤳</div>
+            <div class="pf-auth-info"><div class="pf-auth-name">Face ID / Touch ID</div><div class="pf-auth-sub">Biométrie — rapide et sécurisé</div></div>
+            <div class="pf-auth-check">✓</div>
+          </div>
+          <div class="pf-auth-opt" onclick="pfSelectAuth(this)">
+            <div class="pf-auth-icon">🔢</div>
+            <div class="pf-auth-info"><div class="pf-auth-name">Code PIN à 6 chiffres</div><div class="pf-auth-sub">Fallback si biométrie indisponible</div></div>
+            <div class="pf-auth-check"></div>
+          </div>
+        </div>
+        <div style="height:1px;background:var(--g200);"></div>
+        <div class="fg">
+          <label class="fl">Contacts de confiance & proches aidants</label>
+          <div class="pf-contact-card">
+            <div class="pf-contact-av">👨</div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:600;">Pierre Martin</div><div style="font-size:12px;color:var(--g500);">Conjoint · Accès lecture seule</div></div>
+            <span style="font-size:18px;color:var(--g400);cursor:pointer;" onclick="toast('Options du contact')">⋯</span>
+          </div>
+          <button class="btn bs bfw" onclick="toast('Ajouter un proche aidant')">＋ Ajouter un proche aidant</button>
+        </div>
+        <div style="height:1px;background:var(--g200);"></div>
+        <div class="pf-toggle-row"><div class="pf-ti"><div class="pf-tl">Mode mandataire</div><div class="pf-td">Gérer le profil d'un enfant ou d'une personne dépendante</div></div><label class="pf-toggle"><input type="checkbox"><div class="pf-tslider"></div></label></div>
+        <div style="height:1px;background:var(--g200);"></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn bs" style="flex:1;" onclick="toast('Changer le mot de passe')">🔑 Mot de passe</button>
+          <button class="btn" style="flex:1;background:var(--red-l);color:var(--red);border:none;cursor:pointer;border-radius:8px;font-size:14px;font-weight:600;" onclick="toast('Déconnecté')">🚪 Se déconnecter</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:10px;"></div>
+  </div>
+
+  <div class="bnav">
+    <button class="tbb" onclick="go('patient-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</button>
+    <button class="tbb" onclick="go('patient-armoire')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Armoire</button>
+    <button class="tbb" onclick="go('patient-ordonnances')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Ordonnances</button>
+    <button class="tbb on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+const PRODUCTS = {
+  doliprane:{icon:'💊',iconBg:'var(--red-l)',name:'Doliprane 1000mg',brand:'Paracétamol · Sanofi · OTC',bdpm:true,statusTag:'🚨 Rappel ANSM',statusClass:'tr2',typeTag:'OTC',typeClass:'tgr',dci:'Paracétamol',form:'Comprimé effervescent',dosage:'1 000 mg',cip:'3400932484078',lab:'Sanofi',qty:8,unit:'comprimés',max:16,pct:50,qtyColor:'var(--red)',expiry:'11/2025',location:'Armoire cuisine',added:'5 nov. 2025',note:'⚠️ Lot concerné par un rappel ANSM — à rapporter en pharmacie.'},
+  lisinopril:{icon:'💊',iconBg:'var(--red-l)',name:'Lisinopril 10mg',brand:'Zestril® · AstraZeneca · Ordonnance',bdpm:true,statusTag:'⏰ J-7 Péremption',statusClass:'tr2',typeTag:'Ordonnance',typeClass:'tb',dci:'Lisinopril',form:'Comprimé pelliculé',dosage:'10 mg',cip:'3400936215021',lab:'AstraZeneca',qty:6,unit:'comprimés',max:30,pct:20,qtyColor:'var(--red)',expiry:'03/2026',location:'Armoire salle de bain',added:'15 déc. 2025',note:'Renouvellement urgent — stock critique et péremption imminente.'},
+  metformine:{icon:'💊',iconBg:'var(--blue-l)',name:'Metformine 500mg',brand:'Glucophage® · Merck Serono · Ordonnance',bdpm:true,statusTag:'Valide',statusClass:'tg',typeTag:'Ordonnance',typeClass:'tb',dci:'Metformine chlorhydrate',form:'Comprimé pelliculé',dosage:'500 mg',cip:'3400936413990',lab:'Merck Serono SAS',qty:39,unit:'comprimés',max:60,pct:65,qtyColor:'var(--green)',expiry:'08/2026',location:'Armoire salle de bain',added:'12 mars 2026',note:'Prendre avec les repas.'},
+  amoxicilline:{icon:'💊',iconBg:'var(--orange-l)',name:'Amoxicilline 500mg',brand:'Clamoxyl® · GSK · Ordonnance',bdpm:true,statusTag:'⚠️ J-30 Péremption',statusClass:'to',typeTag:'Ordonnance',typeClass:'tb',dci:'Amoxicilline trihydrate',form:'Gélule',dosage:'500 mg',cip:'3400935225418',lab:'GlaxoSmithKline (GSK)',qty:24,unit:'gélules',max:24,pct:100,qtyColor:'var(--orange)',expiry:'06/2026',location:'Armoire cuisine',added:'2 mai 2026',note:"Conserver à température ambiante, à l'abri de l'humidité."},
+  atorvastatine:{icon:'💊',iconBg:'var(--blue-l)',name:'Atorvastatine 20mg',brand:'Tahor® · Pfizer · Ordonnance',bdpm:true,statusTag:'Valide',statusClass:'tg',typeTag:'Ordonnance',typeClass:'tb',dci:'Atorvastatine calcique',form:'Comprimé pelliculé',dosage:'20 mg',cip:'3400936542159',lab:'Pfizer',qty:72,unit:'comprimés',max:90,pct:80,qtyColor:'var(--green)',expiry:'12/2026',location:'Armoire salle de bain',added:'10 janv. 2026',note:'Prendre le soir de préférence, avec ou sans nourriture.'},
+  arnica:{icon:'🧴',iconBg:'var(--green-l)',name:'Arnica Gel 40g',brand:'Arnica montana · Boiron · OTC — Saisie manuelle',bdpm:false,statusTag:'Valide',statusClass:'tg',typeTag:'OTC Manuel',typeClass:'tgr',dci:'Arnica montana 4 DH',form:'Gel topique',dosage:'40 g',cip:'Non applicable (OTC hors BDPM)',lab:'Boiron',qty:1,unit:'tube (40 g)',max:1,pct:60,qtyColor:'var(--green)',expiry:'02/2028',location:'Salle de bain',added:'3 fév. 2026',note:'Usage externe uniquement. Appliquer en massage léger.'}
+};
+
+function showProduct(key){
+  var p=PRODUCTS[key];if(!p){go('patient-produit-detail');return;}
+  var icon=document.getElementById('pd-icon');icon.textContent=p.icon;icon.style.background=p.iconBg;
+  document.getElementById('pd-name').textContent=p.name;
+  document.getElementById('pd-brand').textContent=p.brand;
+  var bdpmBadge=document.getElementById('pd-bdpm-badge');bdpmBadge.style.display=p.bdpm?'':'none';
+  var stTag=document.getElementById('pd-status-tag');stTag.textContent=p.statusTag;stTag.className='tag '+p.statusClass;
+  var tyTag=document.getElementById('pd-type-tag');tyTag.textContent=p.typeTag;tyTag.className='tag '+p.typeClass;
+  document.getElementById('pd-dci').textContent=p.dci;
+  document.getElementById('pd-form').textContent=p.form;
+  document.getElementById('pd-dosage').textContent=p.dosage;
+  document.getElementById('pd-cip').textContent=p.cip;
+  document.getElementById('pd-lab').textContent=p.lab;
+  var qtyEl=document.getElementById('pd-qty');qtyEl.textContent=p.qty+' '+p.unit;qtyEl.style.color=p.qtyColor;
+  document.getElementById('pd-expiry').textContent=p.expiry;
+  document.getElementById('pd-location').textContent=p.location;
+  document.getElementById('pd-added').textContent=p.added;
+  var bar=document.getElementById('pd-progress');bar.style.width=p.pct+'%';bar.style.background=p.qtyColor;
+  document.getElementById('pd-stock-label').textContent=p.qty+' / '+p.max+' '+p.unit+' restants';
+  go('patient-produit-detail');
+}
+
+function go(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  var t=document.getElementById('screen-'+id);
+  if(t){t.classList.add('active');window.scrollTo(0,0);}
+}
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+document.querySelectorAll('.mover').forEach(function(o){
+  o.addEventListener('click',function(e){if(e.target===o)o.classList.remove('show');});
+});
+function simScan(){closeModal('modal-scan');setTimeout(function(){openModal('modal-scan-result');},280);}
+var _tt;
+function toast(msg){
+  var el=document.getElementById('toast');
+  el.textContent=msg;el.style.opacity='1';el.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(_tt);
+  _tt=setTimeout(function(){el.style.opacity='0';el.style.transform='translateX(-50%) translateY(10px)';},2800);
+}
+
+/* ── Profil ── */
+function pfMutuelleChange(sel){
+  var inp = document.getElementById('pf-mutuelle-autre');
+  inp.style.display = sel.value === 'autre' ? 'block' : 'none';
+  if(sel.value !== 'autre') inp.value = '';
+}
+function pfToggle(id){document.getElementById(id).classList.toggle('collapsed');}
+function pfRemoveTag(el){el.parentElement.remove();}
+function pfAddTag(wrapId,placeholder,isDanger){
+  var name=prompt(placeholder+' :');
+  if(!name||!name.trim())return;
+  var wrap=document.getElementById(wrapId);
+  var addBtn=wrap.querySelector('.pf-tag-add');
+  var tag=document.createElement('span');
+  tag.className='pf-tag'+(isDanger?' danger':'');
+  tag.innerHTML=name+' <span class="pf-tag-rm" onclick="pfRemoveTag(this)">×</span>';
+  wrap.insertBefore(tag,addBtn);
+}
+var pfNssVisible=false;
+function pfToggleNSS(){
+  var f=document.getElementById('pf-nss');
+  pfNssVisible=!pfNssVisible;
+  f.style.letterSpacing=pfNssVisible?'normal':'2px';
+  document.querySelector('.pf-eye').textContent=pfNssVisible?'🙈':'👁';
+}
+function pfToggleALD(cb){
+  document.getElementById('pf-ald-detail').style.display=cb.checked?'block':'none';
+}
+function pfSelectAuth(el){
+  document.querySelectorAll('.pf-auth-opt').forEach(function(o){
+    o.classList.remove('active');
+    o.querySelector('.pf-auth-check').textContent='';
+    o.querySelector('.pf-auth-check').style.color='transparent';
+  });
+  el.classList.add('active');
+  el.querySelector('.pf-auth-check').textContent='✓';
+  el.querySelector('.pf-auth-check').style.color='#fff';
+}
+function pfSave(){
+  var btn=document.getElementById('pf-save-btn');
+  btn.textContent='✓ Enregistré';btn.style.background='var(--green)';
+  setTimeout(function(){btn.textContent='Enregistrer';btn.style.background='';},2000);
+  toast('✅ Profil enregistré');
+}
+</script>
+</body></html>
