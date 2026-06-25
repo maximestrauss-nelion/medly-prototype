@@ -238,11 +238,11 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
   </div>
   <div class="page">
     <div class="greet">Bonjour, <span>Sophie</span> 👋</div>
-    <div class="greetsub">Mardi 27 mai 2026 · Mon armoire — 12 produits</div>
+    <div class="greetsub" id="date-patient-greeting">Mardi 27 mai 2026 · Mon armoire — 12 produits</div>
     <div class="alert at"><div class="ai">🚨</div><div class="ab2"><strong>Rappel de lot ANSM — Action requise</strong>Doliprane 1000mg (lot FR-24-08821) fait l'objet d'un rappel. Rapportez ce médicament à votre pharmacie.<button class="btn bp bsm" style="margin-top:8px;font-size:11px;" onclick="toast('Lien ANSM ouvert')">Voir l'avis ANSM</button></div></div>
-    <div class="alert ar"><div class="ai">⏰</div><div class="ab2"><strong>Péremption dans 7 jours</strong>Lisinopril 10mg expire le 03/06/2026 — 6 comprimés restants</div></div>
+    <div class="alert ar"><div class="ai">⏰</div><div class="ab2" id="date-alert-lisi"><strong>Péremption dans 7 jours</strong>Lisinopril 10mg expire le 03/06/2026 — 6 comprimés restants</div></div>
     <div class="alert ao"><div class="ai">📉</div><div class="ab2"><strong>Stock bas</strong>Oméprazole 20mg — 3 gélules restantes (seuil paramétré : 5)</div></div>
-    <div class="alert ab"><div class="ai">📅</div><div class="ab2"><strong>Péremption dans 30 jours</strong>Amoxicilline 500mg expire le 26/06/2026</div></div>
+    <div class="alert ab"><div class="ai">📅</div><div class="ab2" id="date-alert-amox"><strong>Péremption dans 30 jours</strong>Amoxicilline 500mg expire le 26/06/2026</div></div>
     <div class="sh2" style="margin-top:4px;"><div class="stitle">Accès rapides</div></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
       <div class="card" style="margin-bottom:0;cursor:pointer;" onclick="go('patient-armoire')">
@@ -329,7 +329,7 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
     <div class="card">
       <div class="li" onclick="showProduct('lisinopril')">
         <div class="lic icr">💊</div>
-        <div class="lin"><div class="liname">Lisinopril 10mg</div><div class="lisub">Zestril® · DCI : Lisinopril · Ordonnance</div><div style="display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap;"><span class="bdpm">BDPM ✓</span><span style="font-size:11px;color:var(--red);font-weight:600;">⏰ Expire 03/06/2026 · 6 cp restants</span></div></div>
+        <div class="lin"><div class="liname">Lisinopril 10mg</div><div class="lisub">Zestril® · DCI : Lisinopril · Ordonnance</div><div style="display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap;"><span class="bdpm">BDPM ✓</span><span id="date-armoire-lisi" style="font-size:11px;color:var(--red);font-weight:600;">⏰ Expire 03/06/2026 · 6 cp restants</span></div></div>
         <span class="tag tr2">J-7</span>
       </div>
       <div class="li" onclick="showProduct('metformine')">
@@ -339,7 +339,7 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
       </div>
       <div class="li" onclick="showProduct('amoxicilline')">
         <div class="lic ico">💊</div>
-        <div class="lin"><div class="liname">Amoxicilline 500mg</div><div class="lisub">Clamoxyl® · DCI : Amoxicilline · Ordonnance</div><div style="display:flex;align-items:center;gap:6px;margin-top:3px;"><span class="bdpm">BDPM ✓</span><span style="font-size:11px;color:var(--orange);font-weight:600;">Expire 26/06/2026 · 24 gélules restantes</span></div></div>
+        <div class="lin"><div class="liname">Amoxicilline 500mg</div><div class="lisub">Clamoxyl® · DCI : Amoxicilline · Ordonnance</div><div style="display:flex;align-items:center;gap:6px;margin-top:3px;"><span class="bdpm">BDPM ✓</span><span id="date-armoire-amox" style="font-size:11px;color:var(--orange);font-weight:600;">Expire 26/06/2026 · 24 gélules restantes</span></div></div>
         <span class="tag to">J-30</span>
       </div>
       <div class="li" onclick="showProduct('atorvastatine')">
@@ -492,11 +492,11 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
     <div class="card">
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
         <div class="obs-ring"><svg viewBox="0 0 72 72" width="72" height="72"><circle cx="36" cy="36" r="30" fill="none" stroke="#E5E7EB" stroke-width="7"/><circle cx="36" cy="36" r="30" fill="none" stroke="#16A34A" stroke-width="7" stroke-dasharray="188.5" stroke-dashoffset="24.5" stroke-linecap="round"/></svg><div class="obs-pct">87%</div></div>
-        <div style="flex:1;"><div style="font-size:15px;font-weight:700;color:var(--g900);">Semaine du 20 au 26 mai</div><div style="font-size:13px;color:var(--g500);margin-top:2px;">20 prises sur 23 prévues · 3 manquées</div><div style="display:flex;gap:8px;margin-top:8px;"><span class="tag tg">↑ vs semaine -1</span><span class="tag tb">3 médicaments actifs</span></div></div>
+        <div style="flex:1;"><div id="date-obs-week" style="font-size:15px;font-weight:700;color:var(--g900);">Semaine du 20 au 26 mai</div><div style="font-size:13px;color:var(--g500);margin-top:2px;">20 prises sur 23 prévues · 3 manquées</div><div style="display:flex;gap:8px;margin-top:8px;"><span class="tag tg">↑ vs semaine -1</span><span class="tag tb">3 médicaments actifs</span></div></div>
       </div>
       <div class="wd-row"><div class="wd-pill"><div class="wd-lbl">Lun</div><div class="wd-dot wok">✓</div></div><div class="wd-pill"><div class="wd-lbl">Mar</div><div class="wd-dot wok">✓</div></div><div class="wd-pill"><div class="wd-lbl">Mer</div><div class="wd-dot wmiss">✗</div></div><div class="wd-pill"><div class="wd-lbl">Jeu</div><div class="wd-dot wpart">~</div></div><div class="wd-pill"><div class="wd-lbl">Ven</div><div class="wd-dot wok">✓</div></div><div class="wd-pill"><div class="wd-lbl">Sam</div><div class="wd-dot wok">✓</div></div><div class="wd-pill"><div class="wd-lbl">Dim</div><div class="wd-dot wtoday">•</div></div></div>
     </div>
-    <div class="sh2"><div class="stitle">Aujourd'hui — 27 mai</div></div>
+    <div class="sh2"><div id="date-obs-today" class="stitle">Aujourd'hui — 27 mai</div></div>
     <div class="dose-card"><div class="dose-name">Metformine 500mg</div><div class="dose-posologie">📋 Posologie : 1 cp matin et soir</div><div class="dose-pills"><button class="dose-pill dp-done" onclick="toast('Prise 8h00 déjà confirmée')">✓ 8h00 — Prise</button><button class="dose-pill dp-todo" onclick="this.className='dose-pill dp-done';this.textContent='✓ 20h00 — Prise';toast('✅ Prise confirmée !')">20h00 — À prendre</button></div></div>
     <div class="dose-card"><div class="dose-name">Lisinopril 10mg</div><div class="dose-posologie">📋 Posologie : 1 cp le matin</div><div class="dose-pills"><button class="dose-pill dp-done" onclick="toast('Prise 8h00 déjà confirmée')">✓ 8h00 — Prise</button></div></div>
     <div class="dose-card"><div class="dose-name">Atorvastatine 20mg</div><div class="dose-posologie">📋 Posologie : 1 cp le soir</div><div class="dose-pills"><button class="dose-pill dp-todo" onclick="this.className='dose-pill dp-done';this.textContent='✓ 20h00 — Prise';toast('✅ Prise confirmée !')">20h00 — À prendre</button></div></div>
@@ -529,7 +529,7 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
   <div class="topbar"><div style="display:flex;align-items:center;gap:10px;"><div class="logo" onclick="go('login')" style="cursor:pointer;" title="Accueil prototype">Med<span>ly</span></div><span class="tag tt prof-tag">Aidant</span></div><div class="tr"><div class="av av-a">JM</div></div></div>
   <div class="page">
     <div class="greet">Bonjour, <span>Jean</span> 👋</div>
-    <div class="greetsub">Vous gérez 3 armoires · Mardi 27 mai 2026</div>
+    <div class="greetsub" id="date-aidant-greeting">Vous gérez 3 armoires · Mardi 27 mai 2026</div>
     <div class="sh2"><div class="stitle">Armoires gérées</div><button class="sact" onclick="toast('Ajouter un profil')">+ Ajouter</button></div>
     <div class="arm-card" onclick="go('patient-home')" style="background:linear-gradient(135deg,#2563EB,#1D4ED8);"><div style="font-size:11px;font-weight:700;opacity:.7;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Mon armoire</div><div class="arm-card-name">Jean Martin</div><div class="arm-card-sub">Moi-même · 6 produits</div><div class="arm-card-stats"><div class="arm-stat"><strong>6</strong>produits</div><div class="arm-stat"><strong>0</strong>alerte</div><div class="arm-stat"><strong>100%</strong>valides</div></div></div>
     <div class="arm-card" onclick="go('patient-home')" style="background:linear-gradient(135deg,#7C3AED,#6D28D9);"><div style="font-size:11px;font-weight:700;opacity:.7;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Armoire partagée</div><div class="arm-card-name">Jacqueline Martin</div><div class="arm-card-sub">Maman · Accès lecture/écriture · 15 produits</div><div class="arm-card-stats"><div class="arm-stat"><strong>15</strong>produits</div><div class="arm-stat"><strong style="color:#FCA5A5;">3</strong>alertes</div><div class="arm-stat"><strong>2</strong>ordonnances</div></div></div>
@@ -573,9 +573,9 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
   <div class="page">
     <div class="card"><div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;"><div style="width:52px;height:52px;background:var(--blue-l);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">👤</div><div style="flex:1;"><div style="font-size:18px;font-weight:800;">Sophie Martin</div><div style="font-size:12px;color:var(--g500);">Partagé le 15/04/2026 · Accès lecture seule · Code M9X-42K</div></div></div><div style="padding:10px;background:var(--orange-l);border-radius:8px;border:1px solid #FDE68A;font-size:12px;color:var(--g700);">⚠️ <strong>Rappel :</strong> Vos annotations sont des conseils non contraignants. <a href="#" style="color:var(--blue);" onclick="toast('CGU affichées')">CGU →</a></div></div>
     <div class="alert at"><div class="ai">🚨</div><div class="ab2"><strong>Rappel lot ANSM — Doliprane 1000mg</strong>Lot FR-24-08821 concerné. Informez la patiente.</div></div>
-    <div class="alert ar"><div class="ai">⏰</div><div class="ab2"><strong>Lisinopril 10mg — Péremption J-7</strong>6 comprimés restants · expire 03/06/2026 · stock insuffisant</div></div>
+    <div class="alert ar"><div class="ai">⏰</div><div class="ab2" id="date-pharma-lisi-alert"><strong>Lisinopril 10mg — Péremption J-7</strong>6 comprimés restants · expire 03/06/2026 · stock insuffisant</div></div>
     <div class="sh2"><div class="stitle">Armoire (lecture seule)</div><span class="tag tgr">12 produits</span></div>
-    <div class="card"><div class="li"><div class="lic icr">💊</div><div class="lin"><div class="liname">Doliprane 1000mg</div><div class="lisub">OTC · 8 cp · <span style="color:var(--red);font-weight:600;">Rappel lot ANSM actif</span></div></div><span class="tag tr2">Rappel</span></div><div class="li"><div class="lic icr">💊</div><div class="lin"><div class="liname">Lisinopril 10mg</div><div class="lisub">Zestril® · 6 cp · expire 03/06/2026</div></div><span class="tag tr2">J-7</span></div><div class="li"><div class="lic icb">💊</div><div class="lin"><div class="liname">Metformine 500mg</div><div class="lisub">Glucophage® · 39 cp · expire 08/2026</div></div><span class="tag tg">Valide</span></div><div class="li"><div class="lic icb">💊</div><div class="lin"><div class="liname">Atorvastatine 20mg</div><div class="lisub">Tahor® · 72 cp · expire 06/2026</div></div><span class="tag to">Attention</span></div><div class="li" onclick="toast('Voir tous les produits')"><div style="color:var(--blue);font-size:13px;font-weight:600;width:100%;text-align:center;">+ 8 autres produits →</div></div></div>
+    <div class="card"><div class="li"><div class="lic icr">💊</div><div class="lin"><div class="liname">Doliprane 1000mg</div><div class="lisub">OTC · 8 cp · <span style="color:var(--red);font-weight:600;">Rappel lot ANSM actif</span></div></div><span class="tag tr2">Rappel</span></div><div class="li"><div class="lic icr">💊</div><div class="lin"><div class="liname">Lisinopril 10mg</div><div class="lisub" id="date-pharma-lisi-sub">Zestril® · 6 cp · expire 03/06/2026</div></div><span class="tag tr2">J-7</span></div><div class="li"><div class="lic icb">💊</div><div class="lin"><div class="liname">Metformine 500mg</div><div class="lisub">Glucophage® · 39 cp · expire 08/2026</div></div><span class="tag tg">Valide</span></div><div class="li"><div class="lic icb">💊</div><div class="lin"><div class="liname">Atorvastatine 20mg</div><div class="lisub">Tahor® · 72 cp · expire 06/2026</div></div><span class="tag to">Attention</span></div><div class="li" onclick="toast('Voir tous les produits')"><div style="color:var(--blue);font-size:13px;font-weight:600;width:100%;text-align:center;">+ 8 autres produits →</div></div></div>
     <div class="sh2"><div class="stitle">Annotation pharmacien</div></div>
     <div class="annot"><div class="annot-who">Dr. Durand · 20 mai 2026</div><div class="annot-text">RAS pour Metformine. Pensez à renouveler l'ordonnance de Lisinopril dans 3 semaines.</div></div>
     <div class="fg" style="margin-top:8px;"><label class="fl">Ajouter une annotation</label><textarea class="fi" style="height:70px;resize:none;" placeholder="Conseil officinal non contraignant…"></textarea></div>
@@ -1000,5 +1000,53 @@ function pfSave(){
   setTimeout(function(){btn.textContent='Enregistrer';btn.style.background='';},2000);
   toast('✅ Profil enregistré');
 }
+
+/* ── Dates dynamiques ── */
+function initDates(){
+  function pad(n){return n<10?'0'+n:''+n;}
+  function setTxt(id,txt){var el=document.getElementById(id);if(el)el.textContent=txt;}
+  function setHTML(id,html){var el=document.getElementById(id);if(el)el.innerHTML=html;}
+  var JOURS=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  var MOIS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  var MOIS_S=['jan.','fév.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+  var today=new Date();
+  var d7=new Date(today);d7.setDate(today.getDate()+7);
+  var d30=new Date(today);d30.setDate(today.getDate()+30);
+  var todayFull=JOURS[today.getDay()]+' '+today.getDate()+' '+MOIS[today.getMonth()]+' '+today.getFullYear();
+  var todayShort=today.getDate()+' '+MOIS_S[today.getMonth()];
+  var d7f=pad(d7.getDate())+'/'+pad(d7.getMonth()+1)+'/'+d7.getFullYear();
+  var d7m=pad(d7.getMonth()+1)+'/'+d7.getFullYear();
+  var d30f=pad(d30.getDate())+'/'+pad(d30.getMonth()+1)+'/'+d30.getFullYear();
+  var d30m=pad(d30.getMonth()+1)+'/'+d30.getFullYear();
+  // Semaine lun–dim
+  var ws=new Date(today);
+  var dow=today.getDay();var diff=(dow===0)?-6:1-dow;
+  ws.setDate(today.getDate()+diff);
+  var we=new Date(ws);we.setDate(ws.getDate()+6);
+  var weekStr;
+  if(ws.getMonth()===we.getMonth()){
+    weekStr='Semaine du '+ws.getDate()+' au '+we.getDate()+' '+MOIS[ws.getMonth()];
+  }else{
+    weekStr='Semaine du '+ws.getDate()+' '+MOIS_S[ws.getMonth()]+' au '+we.getDate()+' '+MOIS_S[we.getMonth()];
+  }
+  // Mise à jour DOM
+  setTxt('date-patient-greeting',todayFull+' · Mon armoire — 12 produits');
+  setTxt('date-aidant-greeting','Vous gérez 3 armoires · '+todayFull);
+  setHTML('date-alert-lisi','<strong>Péremption dans 7 jours</strong>Lisinopril 10mg expire le '+d7f+' — 6 comprimés restants');
+  setHTML('date-alert-amox','<strong>Péremption dans 30 jours</strong>Amoxicilline 500mg expire le '+d30f);
+  setTxt('date-armoire-lisi','⏰ Expire '+d7f+' · 6 cp restants');
+  setTxt('date-armoire-amox','Expire '+d30f+' · 24 gélules restantes');
+  setTxt('date-obs-week',weekStr);
+  setTxt('date-obs-today','Aujourd\'hui — '+todayShort);
+  setHTML('date-pharma-lisi-alert','<strong>Lisinopril 10mg — Péremption J-7</strong>6 comprimés restants · expire '+d7f+' · stock insuffisant');
+  setTxt('date-pharma-lisi-sub','Zestril® · 6 cp · expire '+d7f);
+  // Mise à jour objet PRODUCTS
+  PRODUCTS.lisinopril.expiry=d7m;
+  PRODUCTS.amoxicilline.expiry=d30m;
+  // Champ date prescription par défaut = aujourd'hui
+  var pi=document.querySelector('#screen-patient-add-ordonnance input[type="date"]');
+  if(pi)pi.value=today.getFullYear()+'-'+pad(today.getMonth()+1)+'-'+pad(today.getDate());
+}
+window.addEventListener('load',initDates);
 </script>
 </body></html>
